@@ -467,7 +467,7 @@ public class MySQLManager {
         ResultSet rs = null;
         ArrayList<String> manufacture = new ArrayList<String>();
         try {
-            String sql = "SELECT car.region FROM car";
+            String sql = "SELECT DISTINCT (car.region) FROM car";
             stmt = conn.createStatement();
             rs = stmt.executeQuery(sql);
             while (rs.next()){
@@ -487,7 +487,7 @@ public class MySQLManager {
         ResultSet rs = null;
         ArrayList<String> color = new ArrayList<String>();
         try {
-            String sql = "SELECT car.color FROM car";
+            String sql = "SELECT DISTINCT (car.color) FROM car";
             stmt = conn.createStatement();
             rs = stmt.executeQuery(sql);
             while (rs.next()){

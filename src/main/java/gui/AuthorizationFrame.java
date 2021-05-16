@@ -55,6 +55,13 @@ public class AuthorizationFrame extends JDialog {
                 OptionPane.showMessageDialog(parent, "Wrong data", "Error", OptionPane.ERROR_MESSAGE);
                 return;
             }
+            finally {
+                try {
+                    manager.close();
+                } catch (SQLException throwables) {
+                    throwables.printStackTrace();
+                }
+            }
         });
         centerPanel.add(signInButton);  
         exitButton = new Button("exit", Styles.Fonts.BUTTON, Styles.Colors.WHITE, Styles.Colors.BLUE, event -> System.exit(0));
