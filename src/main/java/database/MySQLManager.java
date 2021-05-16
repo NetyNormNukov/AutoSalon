@@ -266,6 +266,35 @@ public class MySQLManager {
         return managers;
     }
 
+    public Manager getManagerByPasswordAndName(String email, String password) throws SQLException {
+        Statement stmt = null;
+        ResultSet rs = null;
+        Manager manager = new Manager();
+        try {
+            conn.setAutoCommit(false);
+            stmt = conn.createStatement();
+            String sql = "SELECT `name`, `surname`, `address`,`phone_number`,`email`,`password`\n" +
+                    "FROM `manager`" +
+                    "WHERE manager.password = '" + password + "' AND manager.email = '" + email +  "'";
+            stmt = conn.createStatement();
+            rs = stmt.executeQuery(sql);
+            rs.next();
+            manager.setName(rs.getString(1));
+            manager.setSurname(rs.getString(2));
+            manager.setAddress(rs.getString(3));
+            manager.setPhoneNumber(rs.getString(4));
+            manager.setEmail(rs.getString(5));
+            manager.setPassword(rs.getString(6));
+
+        } catch (Exception e){
+            e.printStackTrace();
+        } finally {
+            if (stmt != null){ stmt.close(); }
+            if (rs != null) { rs.close(); }
+        }
+        return manager;
+    }
+
     public Manager getManagerById (int id) throws SQLException {
         Statement stmt = null;
         ResultSet rs = null;

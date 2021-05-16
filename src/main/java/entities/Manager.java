@@ -52,4 +52,11 @@ public class Manager {
                 '}';
     }
 
+    public String getName() {
+        return name;
+    }
+
+    public String getSurname() {
+        return surname;
+    }
 }

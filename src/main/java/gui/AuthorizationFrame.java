@@ -1,8 +1,11 @@
 package gui;
+import database.MySQLManager;
+
 import javax.swing.*;
 
 import java.awt.BorderLayout;
 import java.awt.FlowLayout;
+import java.sql.SQLException;
 
 public class AuthorizationFrame extends JDialog {
 	private static final long serialVersionUID = -6241908319980610135L;
@@ -36,7 +39,23 @@ public class AuthorizationFrame extends JDialog {
         centerPanel.add(new JLabel("Password:  "));
         passwordField = new JPasswordField(20);
         centerPanel.add(passwordField);
-        signInButton = new Button("sign in", Styles.Fonts.BUTTON, Styles.Colors.WHITE, Styles.Colors.BLUE, event -> {parent.setManager(null); this.dispose();});
+        signInButton = new Button("sign in", Styles.Fonts.BUTTON, Styles.Colors.WHITE, Styles.Colors.BLUE, event -> {
+            MySQLManager manager = new MySQLManager();
+            try {
+                manager.openConnection();
+                if(! manager.isManager(nameField.getText(), passwordField.getText()) || nameField.getText().equals("") || passwordField.getText().equals("")){
+                    OptionPane.showMessageDialog(parent, "Wrong data", "Error", OptionPane.ERROR_MESSAGE);
+                    return;
+                }
+                else {
+                    parent.setManager(manager.getManagerByPasswordAndName(nameField.getText(), passwordField.getText()));
+                    this.dispose();
+                }
+            } catch (ClassNotFoundException | SQLException e) {
+                OptionPane.showMessageDialog(parent, "Wrong data", "Error", OptionPane.ERROR_MESSAGE);
+                return;
+            }
+        });
         centerPanel.add(signInButton);  
         exitButton = new Button("exit", Styles.Fonts.BUTTON, Styles.Colors.WHITE, Styles.Colors.BLUE, event -> System.exit(0));
         centerPanel.add(exitButton);

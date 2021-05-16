@@ -44,7 +44,7 @@ public class ApplicationFrame extends JFrame {
         currentPage = new CatalogPage(this);
         contentPane.add(currentPage, BorderLayout.CENTER);
         setContentPane(contentPane);
-        new AuthorizationFrame(this);
+        //new AuthorizationFrame(this);
     }
     public void setPage(Page newPage) {
     	contentPane.remove(currentPage);
@@ -158,17 +158,11 @@ public class ApplicationFrame extends JFrame {
             super.setBackground(Styles.Colors.BLUE); 
     	}
     	public void setManager(Manager manager) {
-    		currentManagerLabel.setText("user ");
+    		currentManagerLabel.setText(manager.getName().toLowerCase() + " " + manager.getSurname().toLowerCase() + " ");
     		logOutButton.setVisible(true);
     	}
     }
-    
-    
-    
-    
-    
-    
-    
+
     public static void main(String[] args) {
         java.awt.EventQueue.invokeLater(new Runnable() {
             public void run() {
