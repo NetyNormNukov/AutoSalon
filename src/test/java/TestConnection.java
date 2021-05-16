@@ -10,15 +10,29 @@ import java.util.HashMap;
 import java.sql.Date;
 
 public class TestConnection {
-    public static void main(String[] args) throws SQLException, ClassNotFoundException {
+    public static void main(String[] args) throws SQLException, ClassNotFoundException, IllegalAccessException, CloneNotSupportedException {
         MySQLManager mySQLManager = new MySQLManager();
-        SQLBuilder sqlBuilder = new SQLBuilder("BMW");
-//        System.out.println(sqlBuilder.searchCarBy());
         mySQLManager.openConnection();
-        sqlBuilder.getCountNotEmptyParam();
+        SQLBuilder sqlBuilder = new SQLBuilder("KIA", "Sedan", "", "",
+                "", "", "", 2019, 2022, 4, 4);
+//        System.out.println(sqlBuilder.searchCarBy());
+
+//        System.out.println(sqlBuilder.searchCarBy());
+//        Car car = mySQLManager.getCarBySql(sqlBuilder.searchCarBy());
+//        System.out.println(car.toString());
+//        Car car = mySQLManager.getCarById(1);
+//        System.out.println(car.toString());
+
+        //count cars by id_car
+//        HashMap<Integer, Integer> countCarById= mySQLManager.getCountCarByIdCar();
+//
+//        for (Integer integer: countCarById.values()) {
+//            System.out.println(integer.toString());
+//        }
 
 
-
+//        mySQLManager.insertIntoCar("BMW", "M5", "Black", "New York", "2.0", "2021", "Crossover",
+//                "Automatic", "Gas", "RWD", "4", "4");
         //Out check
 //        ArrayList<Out> outs = mySQLManager.getOutTable();
 //        for (Out out: outs) {
