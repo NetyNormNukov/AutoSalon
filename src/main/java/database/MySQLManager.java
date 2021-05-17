@@ -541,6 +541,18 @@ public class MySQLManager {
         return cust;
     }
 
+    public void insertIntoSeller(String name, String req, String address, String phoneNumber, String email, String bancAcccount ) throws SQLException {
+        String sql = "INSERT INTO seller(name_seller, requisites, address, phone_number, email, bank_account)\n" +
+                "VALUES ( '" + name + "', '" + req + "', '" + address + "', '" + phoneNumber + "', '" + email + "', '" + bancAcccount + "' )";
+        Query(sql);
+    }
+
+    public void insertIntoCustomer(String name, String req, String address, String phoneNumber, String email, String bancAcccount ) throws SQLException {
+        String sql = "INSERT INTO customer(name_cust, requisites, address, phone_number, email, banc_account)\n" +
+                "VALUES ( '" + name + "', '" + req + "', '" + address + "', '" + phoneNumber + "', '" + email + "', '" + bancAcccount + "' )";
+        Query(sql);
+    }
+
 //    private HashMap<Integer, Integer> gainFromCars(String nameMark, String model, String color, String region, String engineVolume, String year, String bodyType,
 //                                                  String transmissionType, String petrolType, String driveType, String seatsNumber, String doorNumber) throws SQLException {
 //        Statement stmt = null;

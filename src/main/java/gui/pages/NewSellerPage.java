@@ -4,6 +4,7 @@ import java.awt.FlowLayout;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
 import java.awt.Insets;
+import java.sql.SQLException;
 
 import javax.swing.JLabel;
 import javax.swing.JOptionPane;
@@ -11,8 +12,10 @@ import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTextField;
 
+import database.MySQLManager;
 import gui.ApplicationFrame;
 import gui.Button;
+import gui.OptionPane;
 import gui.Styles;
 
 public class NewSellerPage extends Page {
@@ -85,10 +88,32 @@ public class NewSellerPage extends Page {
 				   ContentPanel.this.phoneField.getText().equals("") ||
 				   ContentPanel.this.emailField.getText().equals("") ||
 				   ContentPanel.this.bankField.getText().equals("") ){
-					JOptionPane.showMessageDialog(NewSellerPage.this.parent, "Not all fields are filled.");							
+					OptionPane.showMessageDialog(NewSellerPage.this.parent, "Not all fields are filled.", "Error", OptionPane.ERROR_MESSAGE);
 				}
-				else JOptionPane.showMessageDialog(NewSellerPage.this.parent, "Succefully added");
-			}) ;
+				else{
+					MySQLManager manager = new MySQLManager();
+					try {
+						manager.openConnection();
+						manager.insertIntoSeller(nameField.getText(),
+								requisitesField.getText(),
+								addressField.getText(),
+								phoneField.getText(),
+								emailField.getText(),
+								bankField.getText());
+
+						OptionPane.showMessageDialog(NewSellerPage.this.parent, "Succefully added", "Message", OptionPane.INFORMATION_MESSAGE);
+					} catch (ClassNotFoundException | SQLException throwables) {
+						throwables.printStackTrace();
+					} finally {
+						try {
+							manager.close();
+						} catch (SQLException throwables) {
+							throwables.printStackTrace();
+						}
+					}
+
+				}
+			});
 			buttonsPanel.add(sellerButton);			
 			
 			layout.setConstraints(buttonsPanel, constraints);

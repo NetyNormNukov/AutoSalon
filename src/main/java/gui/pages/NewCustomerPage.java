@@ -4,6 +4,7 @@ import java.awt.FlowLayout;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
 import java.awt.Insets;
+import java.sql.SQLException;
 
 import javax.swing.JLabel;
 import javax.swing.JOptionPane;
@@ -11,6 +12,7 @@ import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTextField;
 
+import database.MySQLManager;
 import gui.ApplicationFrame;
 import gui.Button;
 import gui.OptionPane;
@@ -88,7 +90,29 @@ public class NewCustomerPage extends Page {
 				   ContentPanel.this.bankField.getText().equals("") ){
 					OptionPane.showMessageDialog(NewCustomerPage.this.parent, "Not all fields are filled.", "Error", OptionPane.ERROR_MESSAGE);							
 				}
-				else OptionPane.showMessageDialog(NewCustomerPage.this.parent, "Successfully added.", "Massage", JOptionPane.INFORMATION_MESSAGE);
+				else{
+					MySQLManager manager = new MySQLManager();
+					try {
+						manager.openConnection();
+						manager.insertIntoCustomer(nameField.getText(),
+								requisitesField.getText(),
+								addressField.getText(),
+								phoneField.getText(),
+								emailField.getText(),
+								bankField.getText());
+
+						OptionPane.showMessageDialog(NewCustomerPage.this.parent, "Succefully added", "Message", OptionPane.INFORMATION_MESSAGE);
+					} catch (ClassNotFoundException | SQLException throwables) {
+						throwables.printStackTrace();
+					} finally {
+						try {
+							manager.close();
+						} catch (SQLException throwables) {
+							throwables.printStackTrace();
+						}
+					}
+
+				}
 			}) ;
 			buttonsPanel.add(sellerButton);			
 			
