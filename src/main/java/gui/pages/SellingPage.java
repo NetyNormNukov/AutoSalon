@@ -15,6 +15,7 @@ import javax.swing.event.DocumentEvent;
 import javax.swing.event.DocumentListener;
 
 import database.MySQLManager;
+import entities.Car;
 import entities.Customer;
 import entities.Present;
 import gui.ApplicationFrame;
@@ -25,14 +26,18 @@ import gui.Styles;
 public class SellingPage extends Page {
 	private static final long serialVersionUID = 5545613204431814337L;
 	private JScrollPane scrollPane;
-	private Present present;
+	private int count;
+	private double cost;
+	private Car car;
 
 	public SellingPage(ApplicationFrame parent, Present present) {
+		this(parent, present.getCar(), present.getCountCar(), present.getCostCar());
+	}
+	public SellingPage(ApplicationFrame parent, Car car, int count, double cost){
 		super(parent);
-		this.present = present;
-		scrollPane = new JScrollPane(new ContentPanel());
-		add(scrollPane);
-		
+		this.car = car;
+		this.count = count;
+		this.cost = cost;
 	}
 	private class ContentPanel extends JPanel {
 		private static final long serialVersionUID = 8444530915071096626L;
@@ -101,7 +106,10 @@ public class SellingPage extends Page {
 			carLabel = new JLabel("car: ");
 			carLabel.setFont(Styles.Fonts.MENU);
 			carPanel.add(carLabel);
-			
+			Present present = new Present();
+			present.setCar(car);
+			present.setCountCar(count);
+			present.setCostCar(cost);
 			carCell = new CarCell(parent, present, false);
 			carPanel.add(carCell);
 			

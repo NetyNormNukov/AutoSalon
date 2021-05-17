@@ -9,6 +9,30 @@ public class Seller {
     private String email;
     private String bankAccount;
 
+    public String getName() {
+        return name;
+    }
+
+    public String getRequisites() {
+        return requisites;
+    }
+
+    public String getAddress() {
+        return address;
+    }
+
+    public String getPhoneNumber() {
+        return phoneNumber;
+    }
+
+    public String getEmail() {
+        return email;
+    }
+
+    public String getBankAccount() {
+        return bankAccount;
+    }
+
     public int getId() {
         return id;
     }

@@ -9,7 +9,7 @@ public class Present {
         this.countCar = countCar;
     }
 
-    public void setCostCar(int costCar) {
+    public void setCostCar(double costCar) {
         this.costCar = costCar;
     }
 

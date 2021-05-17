@@ -160,6 +160,27 @@ public class MySQLManager {
         return sellers;
     }
 
+    public ArrayList<String> getSellersName() throws SQLException {
+        Statement stmt = null;
+        ResultSet rs = null;
+        ArrayList<String> sellersNames = new ArrayList<String>();
+        try {
+            String sql = "SELECT name_seller\n" +
+                    "From seller";
+            stmt = conn.createStatement();
+            rs = stmt.executeQuery(sql);
+            while (rs.next()){
+                sellersNames.add(rs.getString(1));
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        } finally {
+            if (stmt != null){ stmt.close(); }
+            if (rs != null) { rs.close(); }
+        }
+        return sellersNames;
+    }
+
     private Seller getSellersById(int id) throws SQLException {
         Statement stmt = null;
         ResultSet rs = null;
@@ -190,7 +211,7 @@ public class MySQLManager {
         return seller;
     }
 
-    public ArrayList<In> getInTable(int yearFrom, int yearTo, String nameSeller) throws SQLException {//TODO where statement
+    public ArrayList<In> getInTable(String yearFrom, String yearTo, String nameSeller) throws SQLException {//TODO where statement
         Statement stmt = null;
         ResultSet rs = null;
         ArrayList<In> ins = new ArrayList<In>();
@@ -201,9 +222,10 @@ public class MySQLManager {
             String sql = "SELECT `in`.id_seller, id_car, date_deal, count, cost, annotation\n" +
                     "FROM  `in`\n" +
                     "INNER JOIN seller s on `in`.id_seller = s.id_seller\n" +
-                    "INNER JOIN cost_car cc on `in`.id_cost_car = cc.id_cost_car" +
+                    "INNER JOIN cost_car cc on `in`.id_cost_car = cc.id_cost_car\n" +
                     "WHERE date_deal BETWEEN '" + yearFrom + "' AND '" + yearTo + "' AND name_seller LIKE '" + nameSeller + "%'";
             stmt = conn.createStatement();
+            System.out.println(sql);
             rs = stmt.executeQuery(sql);
             while (rs.next()){
                 In in = new In();

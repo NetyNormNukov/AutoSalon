@@ -6,8 +6,10 @@ import java.awt.GridBagLayout;
 import java.awt.Insets;
 import java.sql.SQLException;
 import java.text.ParseException;
+import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
+import java.util.List;
 
 import javax.swing.JComboBox;
 import javax.swing.JLabel;
@@ -17,7 +19,9 @@ import javax.swing.JSpinner;
 import javax.swing.SpinnerDateModel;
 
 import database.MySQLManager;
+import entities.In;
 import entities.Present;
+import entities.Seller;
 import gui.ApplicationFrame;
 import gui.Button;
 import gui.DateDiffer;
@@ -135,8 +139,11 @@ public class DeliveriesPage extends Page {
 			MySQLManager manager = new MySQLManager();
 			try {
 				manager.openConnection();
+				//List<Seller> sellers = manager.getSellers();
+				List<String> sellersName = manager.getSellersName();
+				sellersName.add(0, "--Any--");
 				constraints.insets.top = 5;
-				sellerBox = new JComboBox<String>(new String[] {"--Any--", "IdeaSoft", "���� � ������", "nice"});
+				sellerBox = new JComboBox<String>(sellersName.toArray(new String[sellersName.size()]));
 				sellerBox.setFont(Styles.Fonts.TEXT);
 				layout.setConstraints(sellerBox, constraints);
 				add(sellerBox);
@@ -200,30 +207,46 @@ public class DeliveriesPage extends Page {
 					cell = new TableCell("ANNOTATION");
 					layout.setConstraints(cell, constraints);
 					add(cell);
-					for (int i = 1; i < 10; i++) {
-						constraints.gridy = i;	
-						cell = new TableCell("OOO ���� � ������ OOO ���� � ������ OOO ���� � ������", 30, 
-								event -> parent.setPage(new SellerPage(parent)) );
-						layout.setConstraints(cell, constraints);
-						add(cell);			
-						cell = new TableCell("TOYOTA SLS-350R TOYOTA SLS-350R TOYOTA SLS-350R", 30, 
-								event -> parent.setPage(new CarPage(parent, new Present(), false)) );
-						layout.setConstraints(cell, constraints);
-						add(cell);	
-						cell = new TableCell("2000$");
-						layout.setConstraints(cell, constraints);
-						add(cell);
-						cell = new TableCell("5");
-						layout.setConstraints(cell, constraints);
-						add(cell);	
-						cell = new TableCell("2000-08-01", 10);
-						layout.setConstraints(cell, constraints);
-						add(cell);	
-						cell = new TableCell("TEXT TEXT TEXT TEXT TEXT TEXT TEXT TEXT TEXT TEXT TEXT TEXT TEXT TEXT TEXT TEXT TEXT TEXT TEXT TEXT ",
-								 50);
-						layout.setConstraints(cell, constraints);
-						add(cell);	
-					}			
+
+					MySQLManager manager = new MySQLManager();
+					try {
+						manager.openConnection();
+						List<In> deliveries = manager.getInTable(DateDiffer.toString((Date) filtersPanel.dateFromSpinner.getValue()),
+								DateDiffer.toString((Date) filtersPanel.dateToSpinner.getValue()),
+								filtersPanel.sellerBox.getItemAt(filtersPanel.sellerBox.getSelectedIndex()));
+						for (int i = 1; i <= deliveries.size(); i++) {
+							constraints.gridy = i;
+							cell = new TableCell(deliveries.get(i-1).getSeller().getName(), 30,
+									event -> parent.setPage(new SellerPage(parent)) ); //TODO parameter to constructor of SellerPage
+							layout.setConstraints(cell, constraints);
+							add(cell);
+							In delivery = deliveries.get(i-1);
+							cell = new TableCell(deliveries.get(i-1).getCar().getNameMark() + " " +deliveries.get(i-1).getCar().getModel(), 30,
+									event -> parent.setPage(new CarPage(parent, delivery.getCar(), delivery.getCount(), delivery.getCost(), false)) );
+							layout.setConstraints(cell, constraints);
+							add(cell);
+							cell = new TableCell(deliveries.get(i-1).getCost()+"");
+							layout.setConstraints(cell, constraints);
+							add(cell);
+							cell = new TableCell(deliveries.get(i-1).getCount()+"");
+							layout.setConstraints(cell, constraints);
+							add(cell);
+							cell = new TableCell(DateDiffer.toString(deliveries.get(i-1).getDate()), 10);
+							layout.setConstraints(cell, constraints);
+							add(cell);
+							cell = new TableCell(deliveries.get(i-1).getAnnotation(), 50);
+							layout.setConstraints(cell, constraints);
+							add(cell);
+						}
+					} catch (ClassNotFoundException | SQLException throwables) {
+						throwables.printStackTrace();
+					} finally {
+						try {
+							manager.close();
+						} catch (SQLException throwables) {
+							throwables.printStackTrace();
+						}
+					}
 				}
 			},	VERTICAL_SCROLLBAR_ALWAYS, HORIZONTAL_SCROLLBAR_AS_NEEDED);
 			javax.swing.SwingUtilities.invokeLater(new Runnable() {

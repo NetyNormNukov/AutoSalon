@@ -10,6 +10,30 @@ public class In {
     private double cost;
     private String annotation;
 
+    public Seller getSeller() {
+        return seller;
+    }
+
+    public Car getCar() {
+        return car;
+    }
+
+    public Date getDate() {
+        return date;
+    }
+
+    public int getCount() {
+        return count;
+    }
+
+    public double getCost() {
+        return cost;
+    }
+
+    public String getAnnotation() {
+        return annotation;
+    }
+
     public void setSeller(Seller seller) {
         this.seller = seller;
     }
