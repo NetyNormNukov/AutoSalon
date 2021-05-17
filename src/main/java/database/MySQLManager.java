@@ -66,6 +66,37 @@ public class MySQLManager {
         return customers;
     }
 
+    public ArrayList<Customer> getCustomers(String str) throws SQLException {
+        Statement stmt = null;
+        ResultSet rs = null;
+        ArrayList<Customer> customers = new ArrayList<>();
+        try {
+            conn.setAutoCommit(false);
+            stmt = conn.createStatement();
+            String sql = "SELECT `name_cust`, `requisites`, `address`, `phone_number`, `email`, `banc_account`" +
+                    "FROM `customer`\n" +
+                    "WHERE name_cust LIKE '" + str + "%'";
+            stmt = conn.createStatement();
+            rs = stmt.executeQuery(sql);
+            while (rs.next()){
+                Customer cust = new Customer();
+                cust.setName(rs.getString(1));
+                cust.setRequisites(rs.getString(2));
+                cust.setAddress(rs.getString(3));
+                cust.setPhoneNumber(rs.getString(4));
+                cust.setEmail(rs.getString(5));
+                cust.setBankAccount(rs.getString(6));
+                customers.add(cust);
+            }
+        } catch (Exception e){
+            e.printStackTrace();
+        } finally {
+            if (stmt != null){ stmt.close(); }
+            if (rs != null) { rs.close(); }
+        }
+        return customers;
+    }
+
     public ArrayList<Customer> getCustomers(String nameCust, String requisites, String address, String phoneNumber,
                                                   String email, String bancAccount) throws SQLException {
         Statement stmt = null;
@@ -138,6 +169,38 @@ public class MySQLManager {
             stmt = conn.createStatement();
             String sql = "SELECT  `name_seller`, `requisites`, `address`, `phone_number`, `email`, `bank_account`, id_seller\n" +
                     "FROM seller\n";
+            stmt = conn.createStatement();
+            rs = stmt.executeQuery(sql);
+            while (rs.next()){
+                Seller seller = new Seller();
+                seller.setName(rs.getString(1));
+                seller.setRequisites(rs.getString(2));
+                seller.setAddress(rs.getString(3));
+                seller.setPhoneNumber(rs.getString(4));
+                seller.setEmail(rs.getString(5));
+                seller.setBankAccount(rs.getString(6));
+                seller.setId(rs.getInt(7));
+                sellers.add(seller);
+            }
+        } catch (Exception e){
+            e.printStackTrace();
+        } finally {
+            if (stmt != null){ stmt.close(); }
+            if (rs != null) { rs.close(); }
+        }
+        return sellers;
+    }
+
+    public ArrayList<Seller> getSellers(String string) throws SQLException {
+        Statement stmt = null;
+        ResultSet rs = null;
+        ArrayList<Seller> sellers = new ArrayList<>();
+        try {
+            conn.setAutoCommit(false);
+            stmt = conn.createStatement();
+            String sql = "SELECT  `name_seller`, `requisites`, `address`, `phone_number`, `email`, `bank_account`, id_seller\n" +
+                    "FROM seller\n" +
+                    "WHERE name_seller LIKE '" + string + "%'";
             stmt = conn.createStatement();
             rs = stmt.executeQuery(sql);
             while (rs.next()){
