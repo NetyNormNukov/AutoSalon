@@ -11,6 +11,34 @@ public class Out {
     private double cost;
     private String annotation;
 
+    public Manager getManager() {
+        return manager;
+    }
+
+    public Customer getCustomer() {
+        return customer;
+    }
+
+    public Car getCar() {
+        return car;
+    }
+
+    public Date getDate() {
+        return date;
+    }
+
+    public int getCount() {
+        return count;
+    }
+
+    public double getCost() {
+        return cost;
+    }
+
+    public String getAnnotation() {
+        return annotation;
+    }
+
     public void setManager(Manager manager) {
         this.manager = manager;
     }

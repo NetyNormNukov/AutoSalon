@@ -363,10 +363,11 @@ public class MySQLManager {
         try {
             conn.setAutoCommit(false);
             stmt = conn.createStatement();
-            String sql = "SELECT `name`, `surname`, `address`,`phone_number`,`email`,`password`, id_m, \n" +
-                    "FROM `manager`" +
-                    "WHERE id_m = "+ id +" " ;
+            String sql = "SELECT `name`, `surname`, `address`,`phone_number`,`email`,`password`, id_m \n" +
+                    "FROM `manager`\n" +
+                    "WHERE id_m = '"+ id +"' " ;
             stmt = conn.createStatement();
+            System.out.println(sql);
             rs = stmt.executeQuery(sql);
             rs.next();
             manager.setName(rs.getString(1));

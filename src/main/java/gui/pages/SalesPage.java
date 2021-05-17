@@ -4,9 +4,11 @@ import java.awt.BorderLayout;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
 import java.awt.Insets;
+import java.sql.SQLException;
 import java.text.ParseException;
 import java.util.Calendar;
 import java.util.Date;
+import java.util.List;
 
 import javax.swing.JLabel;
 import javax.swing.JPanel;
@@ -14,6 +16,9 @@ import javax.swing.JScrollPane;
 import javax.swing.JSpinner;
 import javax.swing.SpinnerDateModel;
 
+import database.MySQLManager;
+import entities.In;
+import entities.Out;
 import entities.Present;
 import gui.ApplicationFrame;
 import gui.DateDiffer;
@@ -30,6 +35,14 @@ public class SalesPage extends Page {
 		super.add(filtersPanel, BorderLayout.NORTH);
 		catalogPanel = new DeliveriesPanel();
 		super.add(catalogPanel, BorderLayout.CENTER);		
+	}
+	@Override
+	public void refresh(){
+		super.remove(catalogPanel);
+		catalogPanel = new DeliveriesPanel();
+		super.add(catalogPanel, BorderLayout.CENTER);
+		parent.revalidate();
+		parent.repaint();
 	}
 	private class FiltersPanel extends JPanel {
 		private static final long serialVersionUID = -8146284544728838159L;		
@@ -86,6 +99,7 @@ public class SalesPage extends Page {
 					date.setDate(date.getDate() - 1);
 					spinner.setValue(date);
 				}
+				SalesPage.this.refresh();
 			});
 			layout.setConstraints(dateFromSpinner, constraints);
 			add(dateFromSpinner);
@@ -106,6 +120,7 @@ public class SalesPage extends Page {
 					date.setDate(date.getDate() + 1);
 					spinner.setValue(date);
 				}
+				SalesPage.this.refresh();
 			});
 			layout.setConstraints(dateToSpinner, constraints);
 			add(dateToSpinner);
@@ -155,32 +170,48 @@ public class SalesPage extends Page {
 					cell = new TableCell("ANNOTATION");
 					layout.setConstraints(cell, constraints);
 					add(cell);
-					for (int i = 1; i < 10; i++) {
-						constraints.gridy = i;	
-						cell = new TableCell("���� ������ � ����������", 30, 
-								event -> parent.setPage(new CustomerPage(parent)) );
-						layout.setConstraints(cell, constraints);
-						add(cell);	
-						cell = new TableCell("TOYOTA SLS-350R TOYOTA SLS-350R TOYOTA SLS-350R", 30, 
-								event -> parent.setPage(new CarPage(parent, new Present(), false)) );
-						layout.setConstraints(cell, constraints);
-						add(cell);
-						cell = new TableCell("2000$");
-						layout.setConstraints(cell, constraints);
-						add(cell);
-						cell = new TableCell("5");
-						layout.setConstraints(cell, constraints);
-						add(cell);	
-						cell = new TableCell("2000-08-01", 10);
-						layout.setConstraints(cell, constraints);
-						add(cell);							
-						cell = new TableCell("���� ���� ������� � ������ ����������", 30);
-						layout.setConstraints(cell, constraints);
-						add(cell);
-						cell = new TableCell("TEXT TEXT TEXT TEXT TEXT TEXT TEXT TEXT TEXT TEXT TEXT TEXT TEXT TEXT TEXT TEXT TEXT TEXT TEXT TEXT ",
-								 30);
-						layout.setConstraints(cell, constraints);
-						add(cell);	
+
+					MySQLManager manager = new MySQLManager();
+					try {
+						manager.openConnection();
+						List<Out> sales = manager.getOutTable(DateDiffer.toString((Date) filtersPanel.dateFromSpinner.getValue()),
+								DateDiffer.toString((Date) filtersPanel.dateToSpinner.getValue()));
+						for (int i = 1; i <= sales.size(); i++) {
+							constraints.gridy = i;
+
+							Out sale = sales.get(i-1);
+							cell = new TableCell(sale.getCustomer().getName(), 30,
+									event -> parent.setPage(new CustomerPage(parent, sale.getCustomer())) );
+							layout.setConstraints(cell, constraints);
+							add(cell);
+							cell = new TableCell(sales.get(i-1).getCar().getNameMark() + " " +sales.get(i-1).getCar().getModel(), 30,
+									event -> parent.setPage(new CarPage(parent, sale.getCar(), sale.getCount(), sale.getCost(), false)) );
+							layout.setConstraints(cell, constraints);
+							add(cell);
+							cell = new TableCell(sales.get(i-1).getCost()+"");
+							layout.setConstraints(cell, constraints);
+							add(cell);
+							cell = new TableCell(sales.get(i-1).getCount()+"");
+							layout.setConstraints(cell, constraints);
+							add(cell);
+							cell = new TableCell(DateDiffer.toString(sales.get(i-1).getDate()), 10);
+							layout.setConstraints(cell, constraints);
+							add(cell);
+							cell = new TableCell(sales.get(i-1).getManager().getName() + " " + sales.get(i-1).getManager().getSurname(),20);
+							layout.setConstraints(cell, constraints);
+							add(cell);
+							cell = new TableCell(sales.get(i-1).getAnnotation(), 50);
+							layout.setConstraints(cell, constraints);
+							add(cell);
+						}
+					} catch (ClassNotFoundException | SQLException throwables) {
+						throwables.printStackTrace();
+					} finally {
+						try {
+							manager.close();
+						} catch (SQLException throwables) {
+							throwables.printStackTrace();
+						}
 					}			
 				}
 			},	VERTICAL_SCROLLBAR_ALWAYS, HORIZONTAL_SCROLLBAR_AS_NEEDED);

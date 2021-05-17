@@ -223,7 +223,7 @@ public class DeliveriesPage extends Page {
 
 							In delivery = deliveries.get(i-1);
 							cell = new TableCell(delivery.getSeller().getName(), 30,
-									event -> parent.setPage(new SellerPage(parent, delivery.getSeller())) ); //TODO parameter to constructor of SellerPage
+									event -> parent.setPage(new SellerPage(parent, delivery.getSeller())) );
 							layout.setConstraints(cell, constraints);
 							add(cell);
 							cell = new TableCell(deliveries.get(i-1).getCar().getNameMark() + " " +deliveries.get(i-1).getCar().getModel(), 30,
