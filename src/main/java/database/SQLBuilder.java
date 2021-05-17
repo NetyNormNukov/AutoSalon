@@ -210,6 +210,137 @@ public class SQLBuilder implements Cloneable{
         return SQL;
     }
 
+    public String searchCar() throws CloneNotSupportedException, IllegalAccessException {
+        SQL += "SELECT `cost_car`.id_car, cost ,`auto_mark`.`name_mark`, model, color,  region, `engine_volume`, `year`,\n" +
+                "`type_body`.`type_body`, `transmission_type`.`transmission_type`, `petrol_type`.`petrol_type`, `type_drive`.`type_drive`, `seats_number`, `door_number`\n" +
+                "FROM cost_car INNER JOIN car ON cost_car.id_car = car.id_car\n" +
+                "INNER JOIN type_body ON car.`id_type_body` = type_body.id_type_body\n" +
+                "INNER JOIN `auto_mark` ON car.`id_mark` = `auto_mark`.`id_mark`\n" +
+                "INNER JOIN `transmission_type` ON car.`id_transmission` = `transmission_type`.`id_transmission`\n" +
+                "INNER JOIN `petrol_type` ON `car`.`id_petrol` = `petrol_type`.`id_petrol`\n" +
+                "INNER JOIN `type_drive` ON `car`.`id_type_drive` = `type_drive`.`id_type_drive`\n" +
+                "WHERE ";
+
+        int count = getCountEmptyParam();
+        if (!nameMark.equals("")) {
+            countEmptyParam--;
+            if (countEmptyParam == count){
+                SQL += "auto_mark.name_mark LIKE '%" + nameMark + "' ";
+            }
+            else {
+                SQL += "auto_mark.name_mark LIKE '%" + nameMark + "' AND ";
+            }
+        }
+
+        if (!bodyType.equals("")) {
+            countEmptyParam--;
+            if (countEmptyParam == count){
+                SQL += "type_body.type_body LIKE '%" + bodyType + "' ";
+            }
+            else {
+                SQL += "type_body.type_body LIKE '%" + bodyType + "' AND ";
+            }
+        }
+
+        if (!transmissionType.equals("")) {
+            countEmptyParam--;
+            if (countEmptyParam == count){
+                SQL += "transmission_type LIKE '%" + transmissionType + "' ";
+            }
+            else {
+                SQL += "transmission_type LIKE '%" + transmissionType + "' AND ";
+            }
+        }
+
+        if (!petrolType.equals("")) {
+            countEmptyParam--;
+            if (countEmptyParam == count){
+                SQL += "petrol_type LIKE '%" + petrolType + "' ";
+            }
+            else {
+                SQL += "petrol_type LIKE '%" + petrolType + "' AND ";
+            }
+        }
+
+        if (!driveType.equals("")) {
+            countEmptyParam--;
+            if (countEmptyParam == count){
+                SQL += "type_drive LIKE '%" + driveType + "' ";
+            }
+            else {
+                SQL += "type_drive LIKE '%" + driveType + "' AND ";
+            }
+        }
+
+        if (!yearTo.equals("")) {
+            countEmptyParam--;
+            if (countEmptyParam == count){
+                SQL += "car.year = '"+ yearTo + "' " ;
+            }
+            else {
+                SQL += "car.year = '"+ yearTo + "' AND ";
+            }
+        }
+
+        if (!manufacture.equals("")) {
+            countEmptyParam--;
+            if (countEmptyParam == count){
+                SQL += "region LIKE '%" + manufacture + "' ";
+            }
+            else {
+                SQL += "region LIKE '%" + manufacture + "' AND ";
+            }
+        }
+
+        if (!color.equals("")) {
+            countEmptyParam--;
+            if (countEmptyParam == count){
+                SQL += "color LIKE '%" + color + "' ";
+            }
+            else {
+                SQL += "color LIKE '%" + color + "' AND ";
+            }
+        }
+
+        if (!seatsCount.equals("")) {
+            countEmptyParam--;
+            if (countEmptyParam == count){
+                SQL += "seats_number LIKE '%" + seatsCount + "' ";
+            }
+            else {
+                SQL += "seats_number LIKE '%" + seatsCount + "' AND ";
+            }
+        }
+
+        if (!doorsCount.equals("")) {
+            countEmptyParam--;
+            if (countEmptyParam == count){
+                SQL += "door_number LIKE '%" + doorsCount + "' ";
+            }
+            else {
+                SQL += "door_number LIKE '%" + doorsCount + "' AND ";
+            }
+        }
+
+        if (!costTo.equals("") && !costFrom.equals("")) {
+            countEmptyParam--;
+            countEmptyParam--;
+            countEmptyParam--;
+
+            if (countEmptyParam == count){
+                SQL += "cost BETWEEN '"+ costFrom + "' AND '"+ costTo + "' " ;
+            }
+            else {
+                SQL += "cost BETWEEN '"+ costFrom + "' AND '"+ costTo + "' AND ";
+            }
+        }
+
+        SQL += "\nGROUP BY cost_car.id_car";
+        System.out.println("count = " + count + "count empty: " + countEmptyParam);
+        System.out.println(SQL);
+        return SQL;
+    }
+
     @Override
     public Object clone() throws CloneNotSupportedException {
         return super.clone();

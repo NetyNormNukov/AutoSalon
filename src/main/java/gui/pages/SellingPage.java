@@ -29,7 +29,7 @@ public class SellingPage extends Page {
 	private int count;
 	private double cost;
 	private Car car;
-
+	private ContentPanel contentPanel;
 	public SellingPage(ApplicationFrame parent, Present present) {
 		this(parent, present.getCar(), present.getCountCar(), present.getCostCar());
 	}
@@ -38,6 +38,8 @@ public class SellingPage extends Page {
 		this.car = car;
 		this.count = count;
 		this.cost = cost;
+		scrollPane = new JScrollPane(new ContentPanel());
+		add(scrollPane);
 	}
 	private class ContentPanel extends JPanel {
 		private static final long serialVersionUID = 8444530915071096626L;
@@ -371,12 +373,8 @@ public class SellingPage extends Page {
 			add(customersPanel);
 		}
 		public void refresh(){
-			/*GridBagLayout layout = (GridBagLayout) ContentPanel.this.getLayout();
-			GridBagConstraints constraints = layout.getConstraints(customersPanel);*/
 			super.remove(customersPanel);
 			customersPanel = new CustomersPanel();
-			/*customersPanel.setLayout(layout);
-			layout.setConstraints(customersPanel, constraints);*/
 			super.add(customersPanel);
 			parent.revalidate();
 			parent.repaint();

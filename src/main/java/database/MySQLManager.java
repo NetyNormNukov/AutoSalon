@@ -225,7 +225,6 @@ public class MySQLManager {
                     "INNER JOIN cost_car cc on `in`.id_cost_car = cc.id_cost_car\n" +
                     "WHERE date_deal BETWEEN '" + yearFrom + "' AND '" + yearTo + "' AND name_seller LIKE '" + nameSeller + "%'";
             stmt = conn.createStatement();
-            System.out.println(sql);
             rs = stmt.executeQuery(sql);
             while (rs.next()){
                 In in = new In();
@@ -254,7 +253,7 @@ public class MySQLManager {
         return ins;
     }
 
-    public ArrayList<Out> getOutTable() throws SQLException {
+    public ArrayList<Out> getOutTable(String yearFrom, String yearTo) throws SQLException {
         Statement stmt = null;
         ResultSet rs = null;
         ArrayList<Out> outs = new ArrayList<Out>();
@@ -263,8 +262,10 @@ public class MySQLManager {
                     "FROM  `out`\n" +
                     "INNER JOIN customer c on `out`.id_customer = c.id_customer\n" +
                     "INNER JOIN cost_car cc on `out`.id_cost_car = cc.id_cost_car\n" +
-                    "INNER JOIN manager m on `out`.id_m = m.id_m";
+                    "INNER JOIN manager m on `out`.id_m = m.id_m\n" +
+                    "WHERE date_deal BETWEEN '" + yearFrom + "' AND '" + yearTo + "'";
             stmt = conn.createStatement();
+            System.out.println(sql);
             rs = stmt.executeQuery(sql);
             while (rs.next()){
                 Out out = new Out();
@@ -391,8 +392,11 @@ public class MySQLManager {
             Query(sql);
     }
 
-    public void insertIntoCar(String nameMark, String model, String color, String region, String engineVolume, String year, String bodyType,
-                              String transmissionType, String petrolType, String driveType, String seatsNumber, String doorNumber) throws SQLException {
+    public Present insertIntoCarAndGetNewPresent(String nameMark, String model, String color, String region, String engineVolume, String year, String bodyType,
+                              String transmissionType, String petrolType, String driveType, String seatsNumber, String doorNumber, double cost, int count) throws SQLException {
+        Statement stmt = null;
+        ResultSet rs = null;
+        Present car = new Present();
         Double.parseDouble(engineVolume);
         Integer.parseInt(year);
         Integer.parseInt(seatsNumber);
@@ -403,6 +407,27 @@ public class MySQLManager {
                 " , '" + region + "', " + engineVolume + " , " + year + ", " +
                 " " + seatsNumber + ", " + doorNumber + ", '" + color + "')";
         Query(sql);
+
+        String sqlId = "SELECT MAX(id_car)\n" +
+                "FROM car";
+        try {
+            Car car1;
+            conn.setAutoCommit(false);
+            stmt = conn.createStatement();
+            rs = stmt.executeQuery(sqlId);
+            rs.next();
+            car1 = getCarById(rs.getInt(1));
+            car.setCar(car1);
+            car.setCostCar(cost);
+            car.setCountCar(count);
+            System.out.println(car.toString());
+        } catch (Exception e){
+            e.printStackTrace();
+        } finally {
+            if (stmt != null){ stmt.close(); }
+            if (rs != null) { rs.close(); }
+        }
+        return car;
     }
 
     public void insertIntoOut(int manager, int customer, int count, String annotation, int car, double cost ) throws SQLException {
@@ -413,11 +438,14 @@ public class MySQLManager {
         Query(sql);
     }
 
-    public void insertIntoIn(int seller, int count, String annotation, int car, double cost ) throws SQLException {
+    public void insertIntoIn(String seller, int count, String annotation, int car, double cost ) throws SQLException {
         String sql = "INSERT INTO `in`( id_seller, id_cost_car, date_deal, count, annotation) \n" +
-                "VALUES ('" + seller + "', (SELECT id_cost_car\n" +
+                "VALUES ( (SELECT id_seller\n" +
+                "FROM seller\n" +
+                "WHERE name_seller = '" +seller +  "'), (SELECT id_cost_car\n" +
                 "FROM cost_car\n" +
                 "WHERE cost = '" + cost + "' AND id_car = '" + car + "'), NOW(), '" + count + "', '" + annotation + "' )";
+        System.out.println(sql);
         Query(sql);
     }
 
@@ -690,19 +718,22 @@ public class MySQLManager {
         return typeDrive;
     }
 
-    public HashMap<Integer, Integer> getCountCarByIdCar() throws SQLException {
+    public ArrayList<Present> getCountCarByIdCar() throws SQLException {
         Statement stmt = null;
         ResultSet rs = null;
-        HashMap<Integer, Integer> countCar = new HashMap<Integer, Integer>();
+        ArrayList<Present> cars = new ArrayList<>();
         try {
             conn.setAutoCommit(false);
-            String sql = "SELECT `cost_car`.id_car, SUM(uni.count_car), SUM(uni.cost_car)\n" +
+            String sql = "SELECT `cost_car`.id_car, `cost_car`.cost\n" +
                     "FROM uni INNER JOIN cost_car ON uni.id = cost_car.id_cost_car\n" +
                     "GROUP BY uni.id";
             stmt = conn.createStatement();
             rs = stmt.executeQuery(sql);
             while (rs.next()){
-                countCar.put(rs.getInt(1), rs.getInt(2));
+                Present pr = new Present();
+                pr.setCar(getCarById(rs.getInt(1)));
+                pr.setCostCar(rs.getInt(2));
+                cars.add(pr);
             }
         } catch (Exception e) {
             e.printStackTrace();
@@ -710,7 +741,33 @@ public class MySQLManager {
             if (stmt != null){ stmt.close(); }
             if (rs != null) { rs.close(); }
         }
-        return countCar;
+        return cars;
+    }
+
+    public ArrayList<Present> getPresentBySql(String sql) throws SQLException {
+        Statement stmt = null;
+        ResultSet rs = null;
+        ArrayList<Present> presents = new ArrayList<>();
+        try {
+            conn.setAutoCommit(false);
+            stmt = conn.createStatement();
+            rs = stmt.executeQuery(sql);
+            while (rs.next()){
+                Present present = new Present();
+                Car car = getCarById(rs.getInt(1));
+                present.setCar(car);
+                present.setCostCar(rs.getDouble(2));
+                presents.add(present);
+            }
+//            System.out.println(rs.getString());
+
+        } catch (Exception e) {
+            e.printStackTrace();
+        } finally {
+            if (stmt != null){ stmt.close(); }
+            if (rs != null) { rs.close(); }
+        }
+        return presents;
     }
 
     public Car getCarById(int id) throws SQLException {

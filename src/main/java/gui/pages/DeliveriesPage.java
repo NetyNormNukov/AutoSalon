@@ -106,6 +106,7 @@ public class DeliveriesPage extends Page {
 					date.setDate(date.getDate() - 1);
 					spinner.setValue(date);
 				}
+				DeliveriesPage.this.refresh();
 			});
 			layout.setConstraints(dateFromSpinner, constraints);
 			add(dateFromSpinner);
@@ -126,6 +127,7 @@ public class DeliveriesPage extends Page {
 					date.setDate(date.getDate() + 1);
 					spinner.setValue(date);
 				}
+				DeliveriesPage.this.refresh();
 			});
 			layout.setConstraints(dateToSpinner, constraints);
 			add(dateToSpinner);
@@ -139,12 +141,14 @@ public class DeliveriesPage extends Page {
 			MySQLManager manager = new MySQLManager();
 			try {
 				manager.openConnection();
-				//List<Seller> sellers = manager.getSellers();
 				List<String> sellersName = manager.getSellersName();
 				sellersName.add(0, "--Any--");
 				constraints.insets.top = 5;
 				sellerBox = new JComboBox<String>(sellersName.toArray(new String[sellersName.size()]));
 				sellerBox.setFont(Styles.Fonts.TEXT);
+				sellerBox.addItemListener(event -> {
+					DeliveriesPage.this.refresh();
+				});
 				layout.setConstraints(sellerBox, constraints);
 				add(sellerBox);
 
@@ -216,11 +220,12 @@ public class DeliveriesPage extends Page {
 								filtersPanel.sellerBox.getItemAt(filtersPanel.sellerBox.getSelectedIndex()));
 						for (int i = 1; i <= deliveries.size(); i++) {
 							constraints.gridy = i;
-							cell = new TableCell(deliveries.get(i-1).getSeller().getName(), 30,
-									event -> parent.setPage(new SellerPage(parent)) ); //TODO parameter to constructor of SellerPage
+
+							In delivery = deliveries.get(i-1);
+							cell = new TableCell(delivery.getSeller().getName(), 30,
+									event -> parent.setPage(new SellerPage(parent, delivery.getSeller())) ); //TODO parameter to constructor of SellerPage
 							layout.setConstraints(cell, constraints);
 							add(cell);
-							In delivery = deliveries.get(i-1);
 							cell = new TableCell(deliveries.get(i-1).getCar().getNameMark() + " " +deliveries.get(i-1).getCar().getModel(), 30,
 									event -> parent.setPage(new CarPage(parent, delivery.getCar(), delivery.getCount(), delivery.getCost(), false)) );
 							layout.setConstraints(cell, constraints);
