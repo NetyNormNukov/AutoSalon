@@ -12,5 +12,6 @@ public abstract class Page extends JPanel {
 		super(new BorderLayout());
 		this.parent = parent;
 	}
+	public void refresh(){}
 }
 	

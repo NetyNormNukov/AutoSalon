@@ -34,6 +34,15 @@ public class CatalogPage extends Page {
 		super.add(catalogPanel, BorderLayout.CENTER);
 		
 	}
+	@Override
+	public void refresh(){
+		super.remove(catalogPanel);
+		catalogPanel = new CatalogPanel();
+		super.add(catalogPanel, BorderLayout.CENTER);
+		parent.revalidate();
+		parent.repaint();
+	}
+
 	private class FiltersPanel extends JPanel {
 		private static final long serialVersionUID = -8146284544728838159L;
 		private JLabel markLabel;
@@ -98,6 +107,7 @@ public class CatalogPage extends Page {
 				marks.add(0, "--Any--");
 				markBox = new JComboBox<String>(marks.toArray(new String[marks.size()]));
 				markBox.setFont(Styles.Fonts.TEXT);
+				markBox.addItemListener(event -> CatalogPage.this.refresh());
 				layout.setConstraints(markBox, constraints);
 				add(markBox);
 
@@ -112,6 +122,7 @@ public class CatalogPage extends Page {
 				regions.add(0, "--Any--");
 				regionBox = new JComboBox<String>(regions.toArray(new String[regions.size()]));
 				regionBox.setFont(Styles.Fonts.TEXT);
+				regionBox.addItemListener(event -> CatalogPage.this.refresh());
 				layout.setConstraints(regionBox, constraints);
 				add(regionBox);
 
@@ -126,6 +137,7 @@ public class CatalogPage extends Page {
 				colors.add(0, "--Any--");
 				colorBox = new JComboBox<String>(colors.toArray(new String[colors.size()]));
 				colorBox.setFont(Styles.Fonts.TEXT);
+				colorBox.addItemListener(event -> CatalogPage.this.refresh());
 				layout.setConstraints(colorBox, constraints);
 				add(colorBox);
 
@@ -141,6 +153,7 @@ public class CatalogPage extends Page {
 				bodies.add(0, "--Any--");
 				bodyBox = new JComboBox<String>(bodies.toArray(new String[bodies.size()]));
 				bodyBox.setFont(Styles.Fonts.TEXT);
+				bodyBox.addItemListener(event -> CatalogPage.this.refresh());
 				layout.setConstraints(bodyBox, constraints);
 				add(bodyBox);
 
@@ -158,6 +171,7 @@ public class CatalogPage extends Page {
 				petrols.add(0, "--Any--");
 				petrolBox = new JComboBox<String>(petrols.toArray(new String[petrols.size()]));
 				petrolBox.setFont(Styles.Fonts.TEXT);
+				petrolBox.addItemListener(event -> CatalogPage.this.refresh());
 				layout.setConstraints(petrolBox, constraints);
 				add(petrolBox);
 
@@ -172,6 +186,7 @@ public class CatalogPage extends Page {
 				transmissions.add(0, "--Any--");
 				transmissionBox = new JComboBox<String>(transmissions.toArray(new String[transmissions.size()]));
 				transmissionBox.setFont(Styles.Fonts.TEXT);
+				transmissionBox.addItemListener(event -> CatalogPage.this.refresh());
 				layout.setConstraints(transmissionBox, constraints);
 				add(transmissionBox);
 
@@ -187,6 +202,7 @@ public class CatalogPage extends Page {
 				typesOfDrive.add(0, "--Any--");
 				typeOfDriveBox = new JComboBox<String>(typesOfDrive.toArray(new String[typesOfDrive.size()]));
 				typeOfDriveBox.setFont(Styles.Fonts.TEXT);
+				typeOfDriveBox.addItemListener(event -> CatalogPage.this.refresh());
 				layout.setConstraints(typeOfDriveBox, constraints);
 				add(typeOfDriveBox);
 
@@ -207,6 +223,7 @@ public class CatalogPage extends Page {
 					if((int) spinner.getValue() > (int) yearToSpinner.getValue()) {
 						spinner.setValue((int) spinner.getValue() + 1);
 					}
+					CatalogPage.this.refresh();
 				});
 				layout.setConstraints(yearFromSpinner, constraints);
 				add(yearFromSpinner);
@@ -225,6 +242,7 @@ public class CatalogPage extends Page {
 					if((int) spinner.getValue() < (int) yearFromSpinner.getValue()) {
 						spinner.setValue((int) spinner.getValue() + 1);
 					}
+					CatalogPage.this.refresh();
 				});
 				layout.setConstraints(yearToSpinner, constraints);
 				add(yearToSpinner);
@@ -238,6 +256,7 @@ public class CatalogPage extends Page {
 				constraints.insets.top = 5;
 				seatsBox = new JComboBox<String>(new String[] {"--Any--", "2", "3", "4", "5", "6", "7", "8"});
 				seatsBox.setFont(Styles.Fonts.TEXT);
+				seatsBox.addItemListener(event -> CatalogPage.this.refresh());
 				layout.setConstraints(seatsBox, constraints);
 				add(seatsBox);
 
@@ -251,6 +270,7 @@ public class CatalogPage extends Page {
 				constraints.gridwidth = GridBagConstraints.REMAINDER;
 				doorsBox = new JComboBox<String>(new String[] {"--Any--", "2", "3", "4", "5"});
 				doorsBox.setFont(Styles.Fonts.TEXT);
+				doorsBox.addItemListener(event -> CatalogPage.this.refresh());
 				layout.setConstraints(doorsBox, constraints);
 				add(doorsBox);
 
@@ -265,13 +285,14 @@ public class CatalogPage extends Page {
 
 				constraints.insets.top = 5;
 				constraints.insets.left = 10;
-				costFromSpinner = new JSpinner(new SpinnerNumberModel(3000, 100, 1000000, 100));
+				costFromSpinner = new JSpinner(new SpinnerNumberModel(50_000, 100, 1_000_000, 100));
 				costFromSpinner.setFont(Styles.Fonts.TEXT);
 				costFromSpinner.addChangeListener(event -> {
 					JSpinner spinner = (JSpinner) event.getSource();
 					if((int) spinner.getValue() > (int) costToSpinner.getValue()) {
 						spinner.setValue((int) spinner.getValue() - 100);
 					}
+					CatalogPage.this.refresh();
 				});
 				layout.setConstraints(costFromSpinner, constraints);
 				add(costFromSpinner);
@@ -283,13 +304,14 @@ public class CatalogPage extends Page {
 				add(costToLabel);
 
 				constraints.insets.top = 5;
-				costToSpinner = new JSpinner(new SpinnerNumberModel(100000, 100, 1000000, 100));
+				costToSpinner = new JSpinner(new SpinnerNumberModel(1_000_000, 100, 1_000_000, 100));
 				costToSpinner.setFont(Styles.Fonts.TEXT);
 				costToSpinner.addChangeListener(event -> {
 					JSpinner spinner = (JSpinner) event.getSource();
 					if((int) spinner.getValue() < (int) costFromSpinner.getValue()) {
 						spinner.setValue((int) spinner.getValue() + 100);
 					}
+					CatalogPage.this.refresh();
 				});
 				layout.setConstraints(costToSpinner, constraints);
 				add(costToSpinner);
@@ -356,9 +378,6 @@ public class CatalogPage extends Page {
 							constraints.gridx = x;
 							layout.setConstraints(cell, constraints);
 							add(cell);
-							/*for (int j = 0; j < 5; j++) {
-
-							}*/
 						}
 					} catch (ClassNotFoundException | SQLException | CloneNotSupportedException | IllegalAccessException throwables) {
 						throwables.printStackTrace();

@@ -26,7 +26,7 @@ public class ApplicationFrame extends JFrame {
     private HeadPanel headPanel;    
     private Page currentPage;
     private FootPanel footPanel;
-     
+    private Manager manager;
     private Deque<Page> pages = new ArrayDeque<>();
     
     public ApplicationFrame() {
@@ -59,13 +59,18 @@ public class ApplicationFrame extends JFrame {
     	contentPane.remove(currentPage);
     	currentPage = pages.pollFirst();
     	contentPane.add(currentPage, BorderLayout.CENTER);
+    	currentPage.refresh();
     	this.revalidate();
     	this.repaint();
     }
     public void setManager(Manager manager) {
-    	footPanel.setManager(manager);
+    	this.manager = manager;
+    	footPanel.setManager(this.manager);
         setVisible(true);
     }
+	public Manager getManager() {
+		return this.manager;
+	}
     
     
     private class HeadPanel extends JPanel {
@@ -139,7 +144,7 @@ public class ApplicationFrame extends JFrame {
     	private static final long serialVersionUID = -430027279308530093L;
     	private JLabel currentManagerLabel;
         private Button logOutButton;   
-        
+
     	public FootPanel() {
     		super(new FlowLayout(FlowLayout.RIGHT, 12, 12));
     		currentManagerLabel = new JLabel();

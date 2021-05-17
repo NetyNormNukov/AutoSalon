@@ -136,7 +136,7 @@ public class CarPage extends Page {
 		backButton = new Button("< back ", Styles.Fonts.MENU, Styles.Colors.WHITE, Styles.Colors.BLUE, event -> parent.back());
 		buttonsPanel.add(backButton);
 		if(selling) {
-			sellingButton = new Button("selling > ", Styles.Fonts.MENU, Styles.Colors.WHITE, Styles.Colors.BLUE, event -> parent.setPage(new SellingPage(parent)));
+			sellingButton = new Button("selling > ", Styles.Fonts.MENU, Styles.Colors.WHITE, Styles.Colors.BLUE, event -> parent.setPage(new SellingPage(parent, present)));
 			buttonsPanel.add(sellingButton);
 		}
 		constraints.insets.left = 15;

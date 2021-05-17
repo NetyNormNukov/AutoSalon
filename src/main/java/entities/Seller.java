@@ -1,12 +1,21 @@
 package entities;
 
 public class Seller {
+    private int id;
     private String name;
     private String requisites;
     private String address;
     private String phoneNumber;
     private String email;
     private String bankAccount;
+
+    public int getId() {
+        return id;
+    }
+
+    public void setId(int id) {
+        this.id = id;
+    }
 
     public void setName(String name) {
         this.name = name;

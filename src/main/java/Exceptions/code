@@ -1,3 +1,4 @@
+MySQLManager manager = new MySQLManager();
 try {
     manager.openConnection();
 } catch (ClassNotFoundException | SQLException throwables) {

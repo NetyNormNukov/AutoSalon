@@ -8,9 +8,6 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
 //TODO insertIntoIn
-//TODO insetIntoOut
-//TODO insertIntoCar
-//TODO SQLBuilder
 public class MySQLManager {
 
     private Connection conn;
@@ -69,6 +66,39 @@ public class MySQLManager {
         return customers;
     }
 
+    public ArrayList<Customer> getCustomers(String nameCust, String requisites, String address, String phoneNumber,
+                                                  String email, String bancAccount) throws SQLException {
+        Statement stmt = null;
+        ResultSet rs = null;
+        ArrayList<Customer> customers = new ArrayList<>();
+        try {
+            conn.setAutoCommit(false);
+            String sql = "SELECT `name_cust`, `requisites`, `address`, `phone_number`, `email`, `banc_account`, id_customer\n" +
+                    "FROM `customer`\n" +
+                    "WHERE name_cust LIKE '" + nameCust + "%' AND requisites LIKE '" + requisites + "%' AND address LIKE '" + address + "%' AND phone_number LIKE '" + phoneNumber + "%' AND" +
+                    " email LIKE '" + email + "%' AND banc_account LIKE '" + bancAccount + "%'";
+            stmt = conn.createStatement();
+            rs = stmt.executeQuery(sql);
+            while (rs.next()){
+                Customer cust = new Customer();
+                cust.setName(rs.getString(1));
+                cust.setRequisites(rs.getString(2));
+                cust.setAddress(rs.getString(3));
+                cust.setPhoneNumber(rs.getString(4));
+                cust.setEmail(rs.getString(5));
+                cust.setBankAccount(rs.getString(6));
+                cust.setId(rs.getInt(7));
+                customers.add(cust);
+            }
+        } catch (Exception e){
+            e.printStackTrace();
+        } finally {
+            if (stmt != null){ stmt.close(); }
+            if (rs != null) { rs.close(); }
+        }
+        return customers;
+    }
+
     public Customer getCustomersById(int id) throws SQLException {
         Statement stmt = null;
         ResultSet rs = null;
@@ -88,6 +118,7 @@ public class MySQLManager {
             cust.setPhoneNumber(rs.getString(4));
             cust.setEmail(rs.getString(5));
             cust.setBankAccount(rs.getString(6));
+            cust.setId(id);
 
         } catch (Exception e){
             e.printStackTrace();
@@ -105,8 +136,8 @@ public class MySQLManager {
         try {
             conn.setAutoCommit(false);
             stmt = conn.createStatement();
-            String sql = "SELECT  `name_seller`, `requisites`, `address`, `phone_number`, `email`, `bank_account`, `business_type`.`name_type`\n" +
-                    "FROM seller, `business_type`\n";
+            String sql = "SELECT  `name_seller`, `requisites`, `address`, `phone_number`, `email`, `bank_account`, id_seller\n" +
+                    "FROM seller\n";
             stmt = conn.createStatement();
             rs = stmt.executeQuery(sql);
             while (rs.next()){
@@ -117,6 +148,7 @@ public class MySQLManager {
                 seller.setPhoneNumber(rs.getString(4));
                 seller.setEmail(rs.getString(5));
                 seller.setBankAccount(rs.getString(6));
+                seller.setId(rs.getInt(7));
                 sellers.add(seller);
             }
         } catch (Exception e){
@@ -147,6 +179,7 @@ public class MySQLManager {
             seller.setPhoneNumber(rs.getString(4));
             seller.setEmail(rs.getString(5));
             seller.setBankAccount(rs.getString(6));
+            seller.setId(id);
 
         } catch (Exception e){
             e.printStackTrace();
@@ -157,15 +190,19 @@ public class MySQLManager {
         return seller;
     }
 
-    public ArrayList<In> getInTable() throws SQLException {
+    public ArrayList<In> getInTable(int yearFrom, int yearTo, String nameSeller) throws SQLException {//TODO where statement
         Statement stmt = null;
         ResultSet rs = null;
         ArrayList<In> ins = new ArrayList<In>();
+        if (nameSeller.equals("--Any--")){
+            nameSeller = "";
+        }
         try {
             String sql = "SELECT `in`.id_seller, id_car, date_deal, count, cost, annotation\n" +
                     "FROM  `in`\n" +
                     "INNER JOIN seller s on `in`.id_seller = s.id_seller\n" +
-                    "INNER JOIN cost_car cc on `in`.id_cost_car = cc.id_cost_car";
+                    "INNER JOIN cost_car cc on `in`.id_cost_car = cc.id_cost_car" +
+                    "WHERE date_deal BETWEEN '" + yearFrom + "' AND '" + yearTo + "' AND name_seller LIKE '" + nameSeller + "%'";
             stmt = conn.createStatement();
             rs = stmt.executeQuery(sql);
             while (rs.next()){
@@ -273,7 +310,7 @@ public class MySQLManager {
         try {
             conn.setAutoCommit(false);
             stmt = conn.createStatement();
-            String sql = "SELECT `name`, `surname`, `address`,`phone_number`,`email`,`password`\n" +
+            String sql = "SELECT `name`, `surname`, `address`,`phone_number`,`email`,`password`, id_m\n" +
                     "FROM `manager`" +
                     "WHERE manager.password = '" + password + "' AND manager.email = '" + email +  "'";
             stmt = conn.createStatement();
@@ -285,6 +322,7 @@ public class MySQLManager {
             manager.setPhoneNumber(rs.getString(4));
             manager.setEmail(rs.getString(5));
             manager.setPassword(rs.getString(6));
+            manager.setId(rs.getInt(7));
 
         } catch (Exception e){
             e.printStackTrace();
@@ -302,7 +340,7 @@ public class MySQLManager {
         try {
             conn.setAutoCommit(false);
             stmt = conn.createStatement();
-            String sql = "SELECT `name`, `surname`, `address`,`phone_number`,`email`,`password`\n" +
+            String sql = "SELECT `name`, `surname`, `address`,`phone_number`,`email`,`password`, id_m, \n" +
                     "FROM `manager`" +
                     "WHERE id_m = "+ id +" " ;
             stmt = conn.createStatement();
@@ -314,6 +352,7 @@ public class MySQLManager {
             manager.setPhoneNumber(rs.getString(4));
             manager.setEmail(rs.getString(5));
             manager.setPassword(rs.getString(6));
+            manager.setId(rs.getInt(7));
 
         } catch (Exception e){
             e.printStackTrace();
@@ -344,35 +383,73 @@ public class MySQLManager {
         Query(sql);
     }
 
-    private HashMap<Integer, Integer> gainFromCars(String nameMark, String model, String color, String region, String engineVolume, String year, String bodyType,
-                                                  String transmissionType, String petrolType, String driveType, String seatsNumber, String doorNumber) throws SQLException {
+    public void insertIntoOut(int manager, int customer, int count, String annotation, int car, double cost ) throws SQLException {
+        String sql = "INSERT INTO `out`(id_m, id_customer, id_cost_car, date_deal, count, annotation) \n" +
+                "VALUES ('" + manager + "', '" + customer + "', (SELECT id_cost_car\n" +
+                "FROM cost_car\n" +
+                "WHERE cost = '" + cost + "' AND id_car = '" + car + "'), NOW(), '" + count + "', '" + annotation + "' )";
+        Query(sql);
+    }
+
+    public void insertIntoIn(int seller, int count, String annotation, int car, double cost ) throws SQLException {
+        String sql = "INSERT INTO `in`( id_seller, id_cost_car, date_deal, count, annotation) \n" +
+                "VALUES ('" + seller + "', (SELECT id_cost_car\n" +
+                "FROM cost_car\n" +
+                "WHERE cost = '" + cost + "' AND id_car = '" + car + "'), NOW(), '" + count + "', '" + annotation + "' )";
+        Query(sql);
+    }
+
+    public Customer insertIntoCustomerAndGetNewCustomer(String nameCust, String requisites, String address, String phoneNumber,
+                                                        String email, String bancAccount) throws SQLException {
+
         Statement stmt = null;
         ResultSet rs = null;
-        ArrayList<Present> presents = new ArrayList<>();
-        HashMap<Integer, Integer> gain = new HashMap<Integer, Integer>();
+        Customer cust = new Customer();
+        String sql = "INSERT INTO customer(name_cust, requisites, address, phone_number, email, banc_account)\n" +
+                "VALUES ('" + nameCust  + "', '" + requisites  + "', '" + address  + "', '" + phoneNumber  + "', '" + email  + "', '" + bancAccount  + "')";
+        Query(sql);
+
+        String sqlId = "SELECT MAX(id_customer)\n" +
+                "FROM customer";
         try {
             conn.setAutoCommit(false);
-            String sql = "SELECT `cost_car`.id_car, SUM(uni.count_car), SUM(uni.cost_car), `auto_mark`.`name_mark`, model, color,  region, `engine_volume`, `year`,\n" +
-                    "`type_body`.`type_body`, `transmission_type`.`transmission_type`, `petrol_type`.`petrol_type`, `type_drive`.`type_drive`, `seats_number`, `door_number`\n" +
-                    "FROM uni INNER JOIN cost_car ON uni.id = cost_car.id_cost_car INNER JOIN car ON cost_car.id_car = car.id_car\n" +
-                    "INNER JOIN type_body ON car.`id_type_body` = type_body.id_type_body\n" +
-                    "INNER JOIN `auto_mark` ON car.`id_mark` = `auto_mark`.`id_mark`\n" +
-                    "INNER JOIN `transmission_type` ON car.`id_transmission` = `transmission_type`.`id_transmission`\n" +
-                    "INNER JOIN `petrol_type` ON `car`.`id_petrol` = `petrol_type`.`id_petrol`\n" +
-                    "INNER JOIN `type_drive` ON `car`.`id_type_drive` = `type_drive`.`id_type_drive`";
             stmt = conn.createStatement();
-            rs = stmt.executeQuery(sql);
-            while (rs.next()){
-                gain.put(rs.getInt("id"), rs.getInt(2));
-            }
-        } catch (Exception e) {
+            rs = stmt.executeQuery(sqlId);
+            rs.next();
+            cust = getCustomersById(rs.getInt(1));
+
+        } catch (Exception e){
             e.printStackTrace();
         } finally {
             if (stmt != null){ stmt.close(); }
             if (rs != null) { rs.close(); }
         }
-        return gain;
+        return cust;
     }
+
+//    private HashMap<Integer, Integer> gainFromCars(String nameMark, String model, String color, String region, String engineVolume, String year, String bodyType,
+//                                                  String transmissionType, String petrolType, String driveType, String seatsNumber, String doorNumber) throws SQLException {
+//        Statement stmt = null;
+//        ResultSet rs = null;
+//        ArrayList<Present> presents = new ArrayList<>();
+//        HashMap<Integer, Integer> gain = new HashMap<Integer, Integer>();
+//        try {
+//            conn.setAutoCommit(false);
+//            String sql = "INSERT INTO auto_mark(name_mark)"  +
+//                    "                "VALUE ('"+"val"+"')";
+//            stmt = conn.createStatement();
+//            rs = stmt.executeQuery(sql);
+//            while (rs.next()){
+//                gain.put(rs.getInt("id"), rs.getInt(2));
+//            }
+//        } catch (Exception e) {
+//            e.printStackTrace();
+//        } finally {
+//            if (stmt != null){ stmt.close(); }
+//            if (rs != null) { rs.close(); }
+//        }
+//        return gain;
+//    }
 
     public ArrayList<Present> present() throws SQLException {
         Statement stmt = null;
@@ -661,6 +738,7 @@ public class MySQLManager {
             car.setRegion(rs.getString("region"));
             car.setSeatsNumber(Integer.parseInt(rs.getString("seats_number")));
             car.setTransmissionType(rs.getString("transmission_type"));
+            car.setId(id);
         } catch (Exception e) {
             e.printStackTrace();
         } finally {

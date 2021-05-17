@@ -4,6 +4,7 @@ import java.awt.BorderLayout;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
 import java.awt.Insets;
+import java.sql.SQLException;
 import java.text.ParseException;
 import java.util.Calendar;
 import java.util.Date;
@@ -15,6 +16,7 @@ import javax.swing.JScrollPane;
 import javax.swing.JSpinner;
 import javax.swing.SpinnerDateModel;
 
+import database.MySQLManager;
 import entities.Present;
 import gui.ApplicationFrame;
 import gui.Button;
@@ -32,6 +34,14 @@ public class DeliveriesPage extends Page {
 		super.add(filtersPanel, BorderLayout.NORTH);
 		catalogPanel = new DeliveriesPanel();
 		super.add(catalogPanel, BorderLayout.CENTER);		
+	}
+	@Override
+	public void refresh(){
+		super.remove(catalogPanel);
+		catalogPanel = new DeliveriesPanel();
+		super.add(catalogPanel, BorderLayout.CENTER);
+		parent.revalidate();
+		parent.repaint();
 	}
 	private class FiltersPanel extends JPanel {
 		private static final long serialVersionUID = -8146284544728838159L;
@@ -121,13 +131,27 @@ public class DeliveriesPage extends Page {
 			sellerLabel.setFont(Styles.Fonts.TEXT);
 			layout.setConstraints(sellerLabel, constraints);
 			add(sellerLabel);
-			
-			constraints.insets.top = 5;
-			sellerBox = new JComboBox<String>(new String[] {"--Any--", "IdeaSoft", "���� � ������", "nice"});
-			sellerBox.setFont(Styles.Fonts.TEXT);
-			layout.setConstraints(sellerBox, constraints);
-			add(sellerBox);
-			
+
+			MySQLManager manager = new MySQLManager();
+			try {
+				manager.openConnection();
+				constraints.insets.top = 5;
+				sellerBox = new JComboBox<String>(new String[] {"--Any--", "IdeaSoft", "���� � ������", "nice"});
+				sellerBox.setFont(Styles.Fonts.TEXT);
+				layout.setConstraints(sellerBox, constraints);
+				add(sellerBox);
+
+			} catch (ClassNotFoundException | SQLException throwables) {
+				throwables.printStackTrace();
+			} finally {
+				try {
+					manager.close();
+				} catch (SQLException throwables) {
+					throwables.printStackTrace();
+				}
+			}
+
+
 			constraints.insets.top = 10;
 			constraints.gridwidth = GridBagConstraints.REMAINDER;
 			newButton = new Button("add new delivery > ", Styles.Fonts.BUTTON, Styles.Colors.WHITE, Styles.Colors.BLUE, event -> parent.setPage(new NewDeliveryPage(parent)));

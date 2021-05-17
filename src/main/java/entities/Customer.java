@@ -1,12 +1,45 @@
 package entities;
 
 public class Customer {
+    private int id;
     private String name;
     private String requisites;
     private String address;
     private String phoneNumber;
     private String email;
     private String bankAccount;
+
+    public int getId() {
+        return id;
+    }
+
+    public String getName() {
+        return name;
+    }
+
+    public void setId(int id) {
+        this.id = id;
+    }
+
+    public String getRequisites() {
+        return requisites;
+    }
+
+    public String getAddress() {
+        return address;
+    }
+
+    public String getPhoneNumber() {
+        return phoneNumber;
+    }
+
+    public String getEmail() {
+        return email;
+    }
+
+    public String getBankAccount() {
+        return bankAccount;
+    }
 
     public void setBankAccount(String bancAccount) {
         this.bankAccount = bancAccount;

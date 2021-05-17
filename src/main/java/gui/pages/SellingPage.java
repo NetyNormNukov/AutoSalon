@@ -1,9 +1,7 @@
 package gui.pages;
 
-import java.awt.FlowLayout;
-import java.awt.GridBagConstraints;
-import java.awt.GridBagLayout;
-import java.awt.Insets;
+import java.awt.*;
+import java.sql.SQLException;
 
 import javax.swing.BorderFactory;
 import javax.swing.JLabel;
@@ -13,20 +11,25 @@ import javax.swing.JScrollPane;
 import javax.swing.JSpinner;
 import javax.swing.JTextField;
 import javax.swing.SpinnerNumberModel;
-import javax.swing.border.EmptyBorder;
+import javax.swing.event.DocumentEvent;
+import javax.swing.event.DocumentListener;
 
-import entities.Car;
+import database.MySQLManager;
+import entities.Customer;
 import entities.Present;
 import gui.ApplicationFrame;
 import gui.Button;
+import gui.OptionPane;
 import gui.Styles;
 
 public class SellingPage extends Page {
 	private static final long serialVersionUID = 5545613204431814337L;
 	private JScrollPane scrollPane;
-	
-	public SellingPage(ApplicationFrame parent) {
+	private Present present;
+
+	public SellingPage(ApplicationFrame parent, Present present) {
 		super(parent);
+		this.present = present;
 		scrollPane = new JScrollPane(new ContentPanel());
 		add(scrollPane);
 		
@@ -35,6 +38,7 @@ public class SellingPage extends Page {
 		private static final long serialVersionUID = 8444530915071096626L;
 		private JPanel buttonsPanel;
 		private Button backButton;
+		private Button clearButton;
 		private Button sellingButton;
 		
 		private JPanel carPanel;
@@ -68,7 +72,9 @@ public class SellingPage extends Page {
 		private JPanel annotationPanel;
 		private JLabel annotationLabel;
 		private JTextField annotationField;
-		
+
+		private CustomersPanel customersPanel;
+
 		public ContentPanel() {
 			GridBagLayout layout = new GridBagLayout();
 			GridBagConstraints constraints = new GridBagConstraints();
@@ -96,7 +102,7 @@ public class SellingPage extends Page {
 			carLabel.setFont(Styles.Fonts.MENU);
 			carPanel.add(carLabel);
 			
-			carCell = new CarCell(parent, new Present(), false);
+			carCell = new CarCell(parent, present, false);
 			carPanel.add(carCell);
 			
 			layout.setConstraints(carPanel, constraints);
@@ -108,6 +114,16 @@ public class SellingPage extends Page {
 			
 			backButton = new Button("< back ", Styles.Fonts.MENU, Styles.Colors.WHITE, Styles.Colors.BLUE, event -> parent.back());
 			buttonsPanel.add(backButton);
+
+			clearButton = new Button(" clear ", Styles.Fonts.MENU, Styles.Colors.WHITE, Styles.Colors.BLUE, event -> {
+				ContentPanel.this.nameField.setText("");
+				ContentPanel.this.addressField.setText("");
+				ContentPanel.this.phoneField.setText("");
+				ContentPanel.this.emailField.setText("");
+				ContentPanel.this.bankField.setText("");
+				ContentPanel.this.annotationField.setText("");
+			});
+			buttonsPanel.add(clearButton);
 		
 			sellingButton = new Button("sell ", Styles.Fonts.MENU, Styles.Colors.WHITE, Styles.Colors.BLUE, event -> {
 				if(ContentPanel.this.nameField.getText().equals("") ||
@@ -115,9 +131,43 @@ public class SellingPage extends Page {
 				   ContentPanel.this.phoneField.getText().equals("") ||
 				   ContentPanel.this.emailField.getText().equals("") ||
 				   ContentPanel.this.bankField.getText().equals("")  ){
-					JOptionPane.showMessageDialog(SellingPage.this.parent, "Not all fields are filled.");							
+
+					OptionPane.showMessageDialog(parent, "Not all fields are filled.", "Error", OptionPane.ERROR_MESSAGE);
 				}
-				else JOptionPane.showMessageDialog(SellingPage.this.parent, "Succefully selled");
+				else{
+					MySQLManager manager = new MySQLManager();
+					try {
+						manager.openConnection();
+						Customer customer;
+						if (customersPanel.customers.size() == 0){
+							customer = manager.insertIntoCustomerAndGetNewCustomer(
+									ContentPanel.this.nameField.getText(),
+									"",
+									ContentPanel.this.addressField.getText(),
+									ContentPanel.this.phoneField.getText(),
+									ContentPanel.this.emailField.getText(),
+									ContentPanel.this.bankField.getText());
+						}
+						else{
+							customer = customersPanel.customers.get(0);
+						}
+						manager.insertIntoOut(parent.getManager().getId(),
+												customer.getId(),
+											(int) countSpinner.getValue(),
+											annotationField.getText(),
+											carCell.getCar().getCar().getId(),
+											carCell.getCar().getCostCar());
+					} catch (ClassNotFoundException | SQLException throwables) {
+						throwables.printStackTrace();
+					} finally {
+						try {
+							manager.close();
+						} catch (SQLException throwables) {
+							throwables.printStackTrace();
+						}
+					}
+					OptionPane.showMessageDialog(parent, "Succefully selled", "Massage", OptionPane.INFORMATION_MESSAGE);
+				}
 			}) ;
 			buttonsPanel.add(sellingButton);			
 			
@@ -150,6 +200,23 @@ public class SellingPage extends Page {
 			
 			nameField = new JTextField(33);
 			nameField.setFont(Styles.Fonts.TEXT);
+			nameField.getDocument().addDocumentListener(new DocumentListener() {
+				@Override
+				public void insertUpdate(DocumentEvent e) {
+					onChange(e);
+				}
+				@Override
+				public void removeUpdate(DocumentEvent e) {
+					onChange(e);
+				}
+				@Override
+				public void changedUpdate(DocumentEvent e){
+					onChange(e);
+				}
+				public void onChange(DocumentEvent e) {
+					SellingPage.ContentPanel.this.refresh();
+				}
+			});
 			namePanel.add(nameField);
 			
 			layout.setConstraints(namePanel, constraints);
@@ -163,6 +230,23 @@ public class SellingPage extends Page {
 			
 			addressField = new JTextField(30);
 			addressField.setFont(Styles.Fonts.TEXT);
+			addressField.getDocument().addDocumentListener(new DocumentListener() {
+				@Override
+				public void insertUpdate(DocumentEvent e) {
+					onChange(e);
+				}
+				@Override
+				public void removeUpdate(DocumentEvent e) {
+					onChange(e);
+				}
+				@Override
+				public void changedUpdate(DocumentEvent e){
+					onChange(e);
+				}
+				public void onChange(DocumentEvent e) {
+					SellingPage.ContentPanel.this.refresh();
+				}
+			});
 			addressPanel.add(addressField);	
 			
 			layout.setConstraints(addressPanel, constraints);
@@ -176,6 +260,23 @@ public class SellingPage extends Page {
 			
 			phoneField = new JTextField(32);
 			phoneField.setFont(Styles.Fonts.TEXT);
+			phoneField.getDocument().addDocumentListener(new DocumentListener() {
+				@Override
+				public void insertUpdate(DocumentEvent e) {
+					onChange(e);
+				}
+				@Override
+				public void removeUpdate(DocumentEvent e) {
+					onChange(e);
+				}
+				@Override
+				public void changedUpdate(DocumentEvent e){
+					onChange(e);
+				}
+				public void onChange(DocumentEvent e) {
+					SellingPage.ContentPanel.this.refresh();
+				}
+			});
 			phonePanel.add(phoneField);
 					
 			layout.setConstraints(phonePanel, constraints);
@@ -189,6 +290,23 @@ public class SellingPage extends Page {
 			
 			emailField = new JTextField(32);
 			emailField.setFont(Styles.Fonts.TEXT);
+			emailField.getDocument().addDocumentListener(new DocumentListener() {
+				@Override
+				public void insertUpdate(DocumentEvent e) {
+					onChange(e);
+				}
+				@Override
+				public void removeUpdate(DocumentEvent e) {
+					onChange(e);
+				}
+				@Override
+				public void changedUpdate(DocumentEvent e){
+					onChange(e);
+				}
+				public void onChange(DocumentEvent e) {
+					SellingPage.ContentPanel.this.refresh();
+				}
+			});
 			emailPanel.add(emailField);
 					
 			layout.setConstraints(emailPanel, constraints);
@@ -202,6 +320,23 @@ public class SellingPage extends Page {
 			
 			bankField = new JTextField(25);
 			bankField.setFont(Styles.Fonts.TEXT);
+			bankField.getDocument().addDocumentListener(new DocumentListener() {
+				@Override
+				public void insertUpdate(DocumentEvent e) {
+					onChange(e);
+				}
+				@Override
+				public void removeUpdate(DocumentEvent e) {
+					onChange(e);
+				}
+				@Override
+				public void changedUpdate(DocumentEvent e){
+					onChange(e);
+				}
+				public void onChange(DocumentEvent e) {
+					SellingPage.ContentPanel.this.refresh();
+				}
+			});
 			bankPanel.add(bankField);
 					
 			layout.setConstraints(bankPanel, constraints);
@@ -224,12 +359,24 @@ public class SellingPage extends Page {
 			label.setFont(Styles.Fonts.MENU);
 			layout.setConstraints(label, constraints);
 			add(label);
-			CustomersPanel customersPanel = new CustomersPanel();
+			customersPanel = new CustomersPanel();
 			add(customersPanel);
 		}
+		public void refresh(){
+			/*GridBagLayout layout = (GridBagLayout) ContentPanel.this.getLayout();
+			GridBagConstraints constraints = layout.getConstraints(customersPanel);*/
+			super.remove(customersPanel);
+			customersPanel = new CustomersPanel();
+			/*customersPanel.setLayout(layout);
+			layout.setConstraints(customersPanel, constraints);*/
+			super.add(customersPanel);
+			parent.revalidate();
+			parent.repaint();
+		}
+
 		private class CustomersPanel extends JPanel {
-			private static final long serialVersionUID = 4313280640157064262L;		
-			
+			private static final long serialVersionUID = 4313280640157064262L;
+			protected java.util.List<Customer> customers;
 			public CustomersPanel() {				
 				GridBagLayout layout = new GridBagLayout();
 				GridBagConstraints constraints = new GridBagConstraints();
@@ -246,64 +393,86 @@ public class SellingPage extends Page {
 				constraints.ipadx = 0;
 				constraints.ipady = 0;
 				constraints.weightx = 0.5;
-				constraints.weighty = 0.5;				
-				TableCell cell = new TableCell("NAME");
-				layout.setConstraints(cell, constraints);
-				add(cell); 
-				cell = new TableCell("ADDRESS");
-				layout.setConstraints(cell, constraints);
-				add(cell);
-				cell = new TableCell("PHONE");
-				layout.setConstraints(cell, constraints);
-				add(cell);
-				cell = new TableCell("EMAIL");
-				layout.setConstraints(cell, constraints);
-				add(cell);
-				cell = new TableCell("BANK ACCOUNT");
-				layout.setConstraints(cell, constraints);
-				add(cell);
-				cell = new TableCell("REQUISITES");
-				layout.setConstraints(cell, constraints);
-				add(cell);
-				cell = new TableCell("FAST CHOOSING");
-				layout.setConstraints(cell, constraints);
-				add(cell);
-				for (int i = 1; i < 10; i++) {
-					constraints.gridy = i;	
-					cell = new TableCell("OOO \"���� � ������\" OOO \"���� � ������\"", 25);
-					layout.setConstraints(cell, constraints);
-					add(cell);	
-					cell = new TableCell("Ukraine, Kharkiv, Dergrachi district, Petrovska st., 80", 25);
+				constraints.weighty = 0.5;
+
+				MySQLManager manager = new MySQLManager();
+				try {
+					manager.openConnection();
+					customers = manager.getCustomers(nameField.getText(),
+							"",
+							addressField.getText(),
+							phoneField.getText(),
+							emailField.getText(),
+							bankField.getText()
+					);
+
+					TableCell cell = new TableCell("NAME");
 					layout.setConstraints(cell, constraints);
 					add(cell);
-					cell = new TableCell("+380988561738");
+					cell = new TableCell("ADDRESS");
 					layout.setConstraints(cell, constraints);
 					add(cell);
-					cell = new TableCell("somebody.wants@email.com");
+					cell = new TableCell("PHONE");
 					layout.setConstraints(cell, constraints);
-					add(cell);	
-					cell = new TableCell("21002102015212102020120", 10);
+					add(cell);
+					cell = new TableCell("EMAIL");
 					layout.setConstraints(cell, constraints);
-					add(cell);		
-					cell = new TableCell("TEXT TEXT TEXT TEXT TEXT TEXT TEXT TEXT TEXT TEXT TEXT TEXT TEXT TEXT TEXT TEXT TEXT TEXT TEXT TEXT ",
-							 25);
+					add(cell);
+					cell = new TableCell("BANK ACCOUNT");
 					layout.setConstraints(cell, constraints);
-					add(cell);	
-					ButtonCell buttonCell = new ButtonCell();
-					layout.setConstraints(buttonCell, constraints);
-					add(buttonCell);
-					javax.swing.SwingUtilities.invokeLater(new Runnable() {
-					   public void run() { 
-						   SellingPage.this.scrollPane.getVerticalScrollBar().setValue(0);
-					   }
-					});
-				}			
+					add(cell);
+					cell = new TableCell("REQUISITES");
+					layout.setConstraints(cell, constraints);
+					add(cell);
+					cell = new TableCell("FAST CHOOSING");
+					layout.setConstraints(cell, constraints);
+					add(cell);
+					for (int i = 1; i <= customers.size(); i++) {
+						constraints.gridy = i;
+						cell = new TableCell(customers.get(i-1).getName(), 25);
+						layout.setConstraints(cell, constraints);
+						add(cell);
+						cell = new TableCell(customers.get(i-1).getAddress(), 25);
+						layout.setConstraints(cell, constraints);
+						add(cell);
+						cell = new TableCell(customers.get(i-1).getPhoneNumber());
+						layout.setConstraints(cell, constraints);
+						add(cell);
+						cell = new TableCell(customers.get(i-1).getEmail());
+						layout.setConstraints(cell, constraints);
+						add(cell);
+						cell = new TableCell(customers.get(i-1).getBankAccount(), 10);
+						layout.setConstraints(cell, constraints);
+						add(cell);
+						cell = new TableCell(customers.get(i-1).getRequisites(),25);
+						layout.setConstraints(cell, constraints);
+						add(cell);
+						ButtonCell buttonCell = new ButtonCell(customers.get(i-1));
+						layout.setConstraints(buttonCell, constraints);
+						add(buttonCell);
+						javax.swing.SwingUtilities.invokeLater(new Runnable() {
+							public void run() {
+								SellingPage.this.scrollPane.getVerticalScrollBar().setValue(0);
+							}
+						});
+					}
+
+				} catch (ClassNotFoundException | SQLException throwables) {
+					throwables.printStackTrace();
+				} finally {
+					try {
+						manager.close();
+					} catch (SQLException throwables) {
+						throwables.printStackTrace();
+					}
+				}
+
 			}
 			private class ButtonCell extends JPanel {
 				private static final long serialVersionUID = 2053928373919419666L;
 				
 				
-				public ButtonCell() {
+				public ButtonCell(Customer customer) {
 					GridBagLayout layout = new GridBagLayout();
 					GridBagConstraints constraints = new GridBagConstraints();
 
@@ -324,11 +493,11 @@ public class SellingPage extends Page {
 					setBorder(BorderFactory.createLineBorder(Styles.Colors.BLUE, 3));
 					
 					Button button = new Button("choose ^ ", Styles.Fonts.BUTTON, Styles.Colors.WHITE, Styles.Colors.BLUE, event ->  {
-						ContentPanel.this.nameField.setText("���� ������");
-						ContentPanel.this.addressField.setText("���������� �������");
-						ContentPanel.this.phoneField.setText("+380988561738");
-						ContentPanel.this.emailField.setText("someone.it.@email.com");
-						ContentPanel.this.bankField.setText("1231548446531534435");
+						ContentPanel.this.nameField.setText(customer.getName());
+						ContentPanel.this.addressField.setText(customer.getAddress());
+						ContentPanel.this.phoneField.setText(customer.getPhoneNumber());
+						ContentPanel.this.emailField.setText(customer.getEmail());
+						ContentPanel.this.bankField.setText(customer.getBankAccount());
 						
 						javax.swing.SwingUtilities.invokeLater(new Runnable() {
 						   public void run() { 

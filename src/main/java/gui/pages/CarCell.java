@@ -88,7 +88,11 @@ public class CarCell extends JPanel {
 		add(button);
 		setBorder(BorderFactory.createLineBorder(Styles.Colors.BLUE, 3));
 	}
-	
+
+	public Present getCar() {
+		return car;
+	}
+
 	public CarCell(ApplicationFrame frame, Present car) {
 		this(frame, car, true);
 	}

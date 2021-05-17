@@ -13,7 +13,10 @@ public class TestConnection {
         MySQLManager mySQLManager = new MySQLManager();
         mySQLManager.openConnection();
         SQLBuilder sqlBuilder = new SQLBuilder("", "", "--Any--", "",
-                "", "", "", 2019, 2022, "--Any--", "4", 120000,20000);
+                "", "", "", 2019, 2022, "--Any--", "", 200,200000);
+
+//        mySQLManager.insertIntoOut(2, 1, 2, "annotation", 2, 80000);
+        mySQLManager.insertIntoIn(2, 3, "ann", 4, 50000);
 //        ArrayList<Present> presents  = mySQLManager.presentBySQL(sqlBuilder.searchCarBy());
 //
 //        for (Present pr: presents) {
@@ -95,5 +98,19 @@ public class TestConnection {
 //        Car car = mySQLManager.getCarById(1);
 //        System.out.println(car.toString());
         mySQLManager.close();
+    }
+
+    public static int test(){
+        try {
+            int i = 0;
+            int j = 5/0;
+            return 0;
+        }
+        catch (Exception e){
+            return 5;
+        }
+        finally {
+            return 2;
+        }
     }
 }

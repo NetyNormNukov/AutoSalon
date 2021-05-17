@@ -3,6 +3,7 @@ package entities;
 import java.util.Date;
 
 public class Car {
+    private int id;
     private String nameMark;
     private String model;
     private String color;
@@ -15,6 +16,14 @@ public class Car {
     private String driveType;
     private int seatsNumber;
     private int doorNumber;
+
+    public int getId() {
+        return id;
+    }
+
+    public void setId(int id) {
+        this.id = id;
+    }
 
     public void setNameMark(String nameMark) {
         this.nameMark = nameMark;
