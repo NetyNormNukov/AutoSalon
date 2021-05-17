@@ -7,6 +7,8 @@ import java.awt.Insets;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 
+import entities.Car;
+import entities.Present;
 import gui.ApplicationFrame;
 import gui.Button;
 import gui.Styles;
@@ -31,12 +33,17 @@ public class CarPage extends Page {
 	private JPanel buttonsPanel;
 	private Button backButton;
 	private Button sellingButton;
+
+	private Present present;
+	private Car car;
 	
-	public CarPage(ApplicationFrame parent) {
-		this(parent, true);
+	public CarPage(ApplicationFrame parent, Present present) {
+		this(parent, present, true);
 	}
-	public CarPage(ApplicationFrame parent, boolean selling) {
+	public CarPage(ApplicationFrame parent, Present present, boolean selling) {
 		super(parent);
+		this.present = present;
+		car = present.getCar();
 		GridBagLayout layout = new GridBagLayout();
 		GridBagConstraints constraints = new GridBagConstraints();
 
@@ -54,73 +61,73 @@ public class CarPage extends Page {
 		constraints.weightx = 1;
 		constraints.weighty = 1;
 		
-		markLabel = new JLabel("mark: toyota ");
+		markLabel = new JLabel("mark: "+car.getNameMark().toLowerCase() + " ");
 		markLabel.setFont(Styles.Fonts.MENU);
 		layout.setConstraints(markLabel, constraints);
 		add(markLabel);
 		
 		constraints.insets.top = 1;
-		modelLabel = new JLabel("model: sls a-350 ");
+		modelLabel = new JLabel("model: "+car.getModel().toLowerCase() + " ");
 		modelLabel.setFont(Styles.Fonts.MENU);
 		layout.setConstraints(modelLabel, constraints);
 		add(modelLabel);
 		
-		regionLabel = new JLabel("manufacture region: japan ");
+		regionLabel = new JLabel("manufacture region: "+car.getRegion().toLowerCase() + " ");
 		regionLabel.setFont(Styles.Fonts.MENU);
 		layout.setConstraints(regionLabel, constraints);
 		add(regionLabel);
 		
-		yearLabel = new JLabel("year: 2003 ");
+		yearLabel = new JLabel("year: "+car.getYear() + " ");
 		yearLabel.setFont(Styles.Fonts.MENU);
 		layout.setConstraints(yearLabel, constraints);
 		add(yearLabel);
 		
-		colorLabel = new JLabel("color: blue ");
+		colorLabel = new JLabel("color: "+car.getColor().toLowerCase() + " ");
 		colorLabel.setFont(Styles.Fonts.MENU);
 		layout.setConstraints(colorLabel, constraints);
 		add(colorLabel);
 		
-		bodyLabel = new JLabel("body type: minivan ");
+		bodyLabel = new JLabel("body type: "+car.getBodyType().toLowerCase() + " ");
 		bodyLabel.setFont(Styles.Fonts.MENU);
 		layout.setConstraints(bodyLabel, constraints);
 		add(bodyLabel);
 		
-		petrolLabel = new JLabel("petrol type: gas ");
+		petrolLabel = new JLabel("petrol type:"+car.getPetrolType().toLowerCase() + " ");
 		petrolLabel.setFont(Styles.Fonts.MENU);
 		layout.setConstraints(petrolLabel, constraints);
 		add(petrolLabel);
 		
-		transmissionLabel = new JLabel("transmission type: mechanical ");
+		transmissionLabel = new JLabel("transmission type: "+car.getTransmissionType().toLowerCase() + " ");
 		transmissionLabel.setFont(Styles.Fonts.MENU);
 		layout.setConstraints(transmissionLabel, constraints);
 		add(transmissionLabel);
 		
-		typeOfDriveLabel = new JLabel("type of drive: full ");
+		typeOfDriveLabel = new JLabel("type of drive: "+car.getDriveType().toLowerCase() + " ");
 		typeOfDriveLabel.setFont(Styles.Fonts.MENU);
 		layout.setConstraints(typeOfDriveLabel, constraints);
 		add(typeOfDriveLabel);
 		
-		engineLabel = new JLabel("engine volume: 2.0 ");
+		engineLabel = new JLabel("engine volume: "+car.getEngineVolume() + " ");
 		engineLabel.setFont(Styles.Fonts.MENU);
 		layout.setConstraints(engineLabel, constraints);
 		add(engineLabel);
 		
-		seatsLabel = new JLabel("number of seats: 5 ");
+		seatsLabel = new JLabel("number of seats: "+car.getSeatsNumber() + " ");
 		seatsLabel.setFont(Styles.Fonts.MENU);
 		layout.setConstraints(seatsLabel, constraints);
 		add(seatsLabel);
 		
-		doorsLabel = new JLabel("number of doors: 4 ");
+		doorsLabel = new JLabel("number of doors: "+car.getDoorNumber() + " ");
 		doorsLabel.setFont(Styles.Fonts.MENU);
 		layout.setConstraints(doorsLabel, constraints);
 		add(doorsLabel);
 		
-		costLabel = new JLabel("cost: 3000$ ");
+		costLabel = new JLabel("cost: "+present.getCostCar() + " ");
 		costLabel.setFont(Styles.Fonts.MENU);
 		layout.setConstraints(costLabel, constraints);
 		add(costLabel);
 		
-		countLabel = new JLabel("available : 5 ");
+		countLabel = new JLabel("available: "+present.getCountCar() + " ");
 		countLabel.setFont(Styles.Fonts.MENU);
 		layout.setConstraints(countLabel, constraints);
 		add(countLabel);

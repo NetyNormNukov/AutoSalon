@@ -80,7 +80,7 @@ public class CarCell extends JPanel {
 		layout.setConstraints(costLabel, constraints);
 		add(costLabel);
 		
-		Button button = new Button("more >", Styles.Fonts.BUTTON, Styles.Colors.WHITE, Styles.Colors.BLUE, event -> frame.setPage(new CarPage(frame, selling)));
+		Button button = new Button("more >", Styles.Fonts.BUTTON, Styles.Colors.WHITE, Styles.Colors.BLUE, event -> frame.setPage(new CarPage(frame, car, selling)));
 		
 		constraints.insets.top = 10;
 		constraints.insets.bottom = 10;

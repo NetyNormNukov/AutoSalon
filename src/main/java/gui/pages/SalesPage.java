@@ -14,6 +14,7 @@ import javax.swing.JScrollPane;
 import javax.swing.JSpinner;
 import javax.swing.SpinnerDateModel;
 
+import entities.Present;
 import gui.ApplicationFrame;
 import gui.DateDiffer;
 import gui.Styles;
@@ -161,7 +162,7 @@ public class SalesPage extends Page {
 						layout.setConstraints(cell, constraints);
 						add(cell);	
 						cell = new TableCell("TOYOTA SLS-350R TOYOTA SLS-350R TOYOTA SLS-350R", 30, 
-								event -> parent.setPage(new CarPage(parent, false)) );
+								event -> parent.setPage(new CarPage(parent, new Present(), false)) );
 						layout.setConstraints(cell, constraints);
 						add(cell);
 						cell = new TableCell("2000$");

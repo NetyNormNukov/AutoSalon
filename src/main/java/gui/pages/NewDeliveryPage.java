@@ -15,6 +15,7 @@ import javax.swing.JSpinner;
 import javax.swing.JTextField;
 import javax.swing.SpinnerNumberModel;
 
+import entities.Present;
 import gui.ApplicationFrame;
 import gui.Button;
 import gui.Styles;
@@ -453,7 +454,7 @@ public class NewDeliveryPage extends Page {
 					constraints.insets.left = 1;
 					JPanel buttonsPanel = new JPanel(new FlowLayout(FlowLayout.LEFT, 5, 5));
 					
-					Button moreButton = new Button("more >", Styles.Fonts.BUTTON, Styles.Colors.WHITE, Styles.Colors.BLUE, event -> frame.setPage(new CarPage(frame, false)));
+					Button moreButton = new Button("more >", Styles.Fonts.BUTTON, Styles.Colors.WHITE, Styles.Colors.BLUE, event -> frame.setPage(new CarPage(frame, new Present(), false)));
 					buttonsPanel.add(moreButton);
 					Button chooseButton = new Button("choose ^ ", Styles.Fonts.BUTTON, Styles.Colors.WHITE, Styles.Colors.BLUE, event -> { 						
 						ContentPanel.this.markBox.setSelectedIndex(0);
