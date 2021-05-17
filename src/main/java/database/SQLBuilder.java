@@ -15,6 +15,8 @@ public class SQLBuilder implements Cloneable{
     private String yearTo = "";
     private String seatsCount = "";
     private String doorsCount = "";
+    private String costTo = "";
+    private String costFrom = "";
     private int countEmptyParam; //without SQL
 
     {
@@ -28,7 +30,9 @@ public class SQLBuilder implements Cloneable{
     }
 
     public SQLBuilder(String nameMark, String bodyType, String transmissionType, String petrolType, String driveType,
-                      String manufacture, String color, int yearFrom, int yearTo, int seatsCount, int doorsCount) {
+                      String manufacture, String color, int yearFrom, int yearTo, String seatsCount, String doorsCount,
+                        int costFrom, int costTo) {
+
         this.nameMark = nameMark;
         this.bodyType = bodyType;
         this.transmissionType = transmissionType;
@@ -37,9 +41,18 @@ public class SQLBuilder implements Cloneable{
         this.manufacture = manufacture;
         this.color = color;
         this.yearFrom = yearFrom+"";
-        this.yearTo = yearTo+"";
-        this.seatsCount = seatsCount+"";
-        this.doorsCount = doorsCount+"";
+        this.yearTo = yearTo + "";
+        this.costTo = costTo + "";
+        this.costFrom = costFrom + "";
+        this.seatsCount = seatsCount;
+        this.doorsCount = doorsCount;
+        try {
+            setFieldWhichContainsAny();
+        } catch (IllegalAccessException e) {
+            e.printStackTrace();
+        } catch (CloneNotSupportedException e) {
+            e.printStackTrace();
+        }
     }
 
     private int getCountEmptyParam() throws IllegalAccessException, CloneNotSupportedException {
@@ -57,11 +70,24 @@ public class SQLBuilder implements Cloneable{
         return count;
     }
 
+    private void setFieldWhichContainsAny() throws IllegalAccessException, CloneNotSupportedException {
+        Field[] fields = this.getClass().getDeclaredFields();
+        for (Field f: fields) {
+            f.setAccessible(true);
+            SQLBuilder sqlBuilder = (SQLBuilder) this.clone();
+            if (f.getType() == String.class){
+                if (f.get(sqlBuilder).equals("--Any--")){
+                    f.set(this, "");
+                }
+            }
+        }
+
+    }
+
     public String searchCarBy() throws CloneNotSupportedException, IllegalAccessException {
-        SQL += "SELECT `auto_mark`.`name_mark`, model, color,  region, `engine_volume`, `year`,\n" +
-                "`type_body`.`type_body`, `transmission_type`.`transmission_type`, `petrol_type`.`petrol_type`,\n" +
-                "`type_drive`.`type_drive`, `seats_number`, `door_number`\n" +
-                "FROM car\n" +
+        SQL += "SELECT `cost_car`.id_car, SUM(uni.count_car), cost ,`auto_mark`.`name_mark`, model, color,  region, `engine_volume`, `year`,\n" +
+                "`type_body`.`type_body`, `transmission_type`.`transmission_type`, `petrol_type`.`petrol_type`, `type_drive`.`type_drive`, `seats_number`, `door_number`\n" +
+                "FROM uni INNER JOIN cost_car ON uni.id = cost_car.id_cost_car INNER JOIN car ON cost_car.id_car = car.id_car\n" +
                 "INNER JOIN type_body ON car.`id_type_body` = type_body.id_type_body\n" +
                 "INNER JOIN `auto_mark` ON car.`id_mark` = `auto_mark`.`id_mark`\n" +
                 "INNER JOIN `transmission_type` ON car.`id_transmission` = `transmission_type`.`id_transmission`\n" +
@@ -170,6 +196,17 @@ public class SQLBuilder implements Cloneable{
             }
         }
 
+        if (!costTo.equals("") && !costFrom.equals("")) {
+            countEmptyParam--;
+            countEmptyParam--;
+            if (countEmptyParam == count){
+                SQL += "cost BETWEEN '"+ costFrom + "' AND '"+ costTo + "' " ;
+            }
+            else {
+                SQL += "cost BETWEEN '"+ costFrom + "' AND '"+ costTo + "' AND ";
+            }
+        }
+        SQL += "\nGROUP BY uni.id";
         return SQL;
     }
 

@@ -15,6 +15,9 @@ import javax.swing.SpinnerNumberModel;
 
 import com.mysql.cj.jdbc.exceptions.MySQLQueryInterruptedException;
 import database.MySQLManager;
+import database.SQLBuilder;
+import entities.Car;
+import entities.Present;
 import gui.ApplicationFrame;
 import gui.Styles;
 
@@ -34,31 +37,31 @@ public class CatalogPage extends Page {
 	private class FiltersPanel extends JPanel {
 		private static final long serialVersionUID = -8146284544728838159L;
 		private JLabel markLabel;
-		private JComboBox<String> markBox;
+		protected JComboBox<String> markBox;
 		private JLabel regionLabel;
-		private JComboBox<String> regionBox;
+		protected JComboBox<String> regionBox;
 		private JLabel colorLabel;
-		private JComboBox<String> colorBox;
+		protected JComboBox<String> colorBox;
 		private JLabel bodyLabel;
-		private JComboBox<String> bodyBox;
+		protected JComboBox<String> bodyBox;
 		private JLabel petrolLabel;
-		private JComboBox<String> petrolBox;
+		protected JComboBox<String> petrolBox;
 		private JLabel transmissionLabel;
-		private JComboBox<String> transmissionBox;
+		protected JComboBox<String> transmissionBox;
 		private JLabel typeOfDriveLabel;
-		private JComboBox<String> typeOfDriveBox;
+		protected JComboBox<String> typeOfDriveBox;
 		private JLabel seatsLabel;
-		private JComboBox<String> seatsBox;
+		protected JComboBox<String> seatsBox;
 		private JLabel doorsLabel;
-		private JComboBox<String> doorsBox;
+		protected JComboBox<String> doorsBox;
 		private JLabel yearFromLabel;
-		private JSpinner yearFromSpinner;
+		protected JSpinner yearFromSpinner;
 		private JLabel yearToLabel;
-		private JSpinner yearToSpinner;
+		protected JSpinner yearToSpinner;
 		private JLabel costFromLabel;
-		private JSpinner costFromSpinner;
+		protected JSpinner costFromSpinner;
 		private JLabel costToLabel;
-		private JSpinner costToSpinner;
+		protected JSpinner costToSpinner;
 		
 		
 		public FiltersPanel() {
@@ -323,16 +326,50 @@ public class CatalogPage extends Page {
 					constraints.ipadx = 0;
 					constraints.ipady = 0;
 					constraints.weightx = 0.5;
-					constraints.weighty = 0.5;				
-					for (int i = 0; i < 10; i++) {
-						constraints.gridy = i;
-						for (int j = 0; j < 5; j++) {
-							CarCell cell = new CarCell(parent);
-							constraints.gridx = j;
+					constraints.weighty = 0.5;
+
+					MySQLManager manager = new MySQLManager();
+					try {
+						manager.openConnection();
+						List<Present> cars = manager.presentBySQL(new SQLBuilder(
+								CatalogPage.this.filtersPanel.markBox.getItemAt(CatalogPage.this.filtersPanel.markBox.getSelectedIndex()),
+								CatalogPage.this.filtersPanel.bodyBox.getItemAt(CatalogPage.this.filtersPanel.bodyBox.getSelectedIndex()),
+								CatalogPage.this.filtersPanel.transmissionBox.getItemAt(CatalogPage.this.filtersPanel.transmissionBox.getSelectedIndex()),
+								CatalogPage.this.filtersPanel.petrolBox.getItemAt(CatalogPage.this.filtersPanel.petrolBox.getSelectedIndex()),
+								CatalogPage.this.filtersPanel.typeOfDriveBox.getItemAt(CatalogPage.this.filtersPanel.typeOfDriveBox.getSelectedIndex()),
+								CatalogPage.this.filtersPanel.regionBox.getItemAt(CatalogPage.this.filtersPanel.regionBox.getSelectedIndex()),
+								CatalogPage.this.filtersPanel.colorBox.getItemAt(CatalogPage.this.filtersPanel.colorBox.getSelectedIndex()),
+								(int) CatalogPage.this.filtersPanel.yearFromSpinner.getValue(),
+								(int) CatalogPage.this.filtersPanel.yearToSpinner.getValue(),
+								CatalogPage.this.filtersPanel.seatsBox.getItemAt(CatalogPage.this.filtersPanel.seatsBox.getSelectedIndex()),
+								CatalogPage.this.filtersPanel.doorsBox.getItemAt(CatalogPage.this.filtersPanel.doorsBox.getSelectedIndex()),
+								(int) CatalogPage.this.filtersPanel.costFromSpinner.getValue(),
+								(int) CatalogPage.this.filtersPanel.costToSpinner.getValue()
+						).searchCarBy());
+
+						for (int i = 0, x = 0; i < cars.size(); i++, x++) {
+							if(i % 5 == 0){
+								constraints.gridy = i;
+								x = 0;
+							}
+							CarCell cell = new CarCell(parent, cars.get(i));
+							constraints.gridx = x;
 							layout.setConstraints(cell, constraints);
 							add(cell);
-						}			
-					}			
+							/*for (int j = 0; j < 5; j++) {
+
+							}*/
+						}
+					} catch (ClassNotFoundException | SQLException | CloneNotSupportedException | IllegalAccessException throwables) {
+						throwables.printStackTrace();
+					} finally {
+						try {
+							manager.close();
+						} catch (SQLException throwables) {
+							throwables.printStackTrace();
+						}
+					}
+
 				}
 			},	VERTICAL_SCROLLBAR_ALWAYS, HORIZONTAL_SCROLLBAR_AS_NEEDED);
 		}

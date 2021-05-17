@@ -12,9 +12,13 @@ public class TestConnection {
     public static void main(String[] args) throws SQLException, ClassNotFoundException, IllegalAccessException, CloneNotSupportedException {
         MySQLManager mySQLManager = new MySQLManager();
         mySQLManager.openConnection();
-        SQLBuilder sqlBuilder = new SQLBuilder("KIA", "Sedan", "", "",
-                "", "", "", 2019, 2022, 4, 4);
-//        System.out.println(sqlBuilder.searchCarBy());
+        SQLBuilder sqlBuilder = new SQLBuilder("", "", "--Any--", "",
+                "", "", "", 2019, 2022, "--Any--", "4", 120000,20000);
+//        ArrayList<Present> presents  = mySQLManager.presentBySQL(sqlBuilder.searchCarBy());
+//
+//        for (Present pr: presents) {
+//            System.out.println(pr.toString());
+//        }
 
 //        System.out.println(sqlBuilder.searchCarBy());
 //        Car car = mySQLManager.getCarBySql(sqlBuilder.searchCarBy());

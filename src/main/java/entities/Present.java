@@ -3,23 +3,30 @@ package entities;
 public class Present {
     private Car car;
     private int countCar;
-    private double costAllCar;
+    private double costCar;
 
     public void setCountCar(int countCar) {
         this.countCar = countCar;
     }
 
     public void setCostCar(int costCar) {
-        this.costAllCar = costCar;
+        this.costCar = costCar;
     }
 
     public void setCar(Car car) {
         this.car = car;
     }
 
-    public double getCostCar(){
+    public Car getCar() {
+        return car;
+    }
 
-        return costAllCar /countCar;
+    public int getCountCar() {
+        return countCar;
+    }
+
+    public double getCostCar() {
+        return costCar;
     }
 
     @Override
@@ -27,7 +34,7 @@ public class Present {
         return "Present{" +
                 "car=" + car +
                 ", countCar=" + countCar +
-                ", costCar=" + costAllCar +
+                ", costCar=" + costCar +
                 '}';
     }
 }

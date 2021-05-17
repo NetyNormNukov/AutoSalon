@@ -7,6 +7,8 @@ import javax.swing.BorderFactory;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 
+import entities.Car;
+import entities.Present;
 import gui.ApplicationFrame;
 import gui.Button;
 import gui.Styles;
@@ -20,9 +22,11 @@ public class CarCell extends JPanel {
 	private JLabel petrolLabel;
 	private JLabel transmissionLabel;
 	private JLabel costLabel;
+	private Present car;
 	
-	public CarCell(ApplicationFrame frame, boolean selling) {
+	public CarCell(ApplicationFrame frame, Present car , boolean selling) {
 		super();
+		this.car = car;
 		GridBagLayout layout = new GridBagLayout();
 		GridBagConstraints constraints = new GridBagConstraints();
 
@@ -40,38 +44,38 @@ public class CarCell extends JPanel {
 		constraints.weightx = 1;
 		constraints.weighty = 1;
 		
-		nameLabel = new JLabel("toyota sls a-350 ");
+		nameLabel = new JLabel((car.getCar().getNameMark() + " " + car.getCar().getModel()).toLowerCase() + " ");
 		nameLabel.setFont(Styles.Fonts.MENU);
 		layout.setConstraints(nameLabel, constraints);
 		add(nameLabel);
 		
 		constraints.insets.top = 1;
-		yearLabel = new JLabel("Year: 2003");
+		yearLabel = new JLabel("Year: "+car.getCar().getYear());
 		yearLabel.setFont(Styles.Fonts.TEXT);
 		layout.setConstraints(yearLabel, constraints);
 		add(yearLabel);
 		
-		colorLabel = new JLabel("Color: blue");
+		colorLabel = new JLabel("Color: "+car.getCar().getColor());
 		colorLabel.setFont(Styles.Fonts.TEXT);
 		layout.setConstraints(colorLabel, constraints);
 		add(colorLabel);
 		
-		bodyLabel = new JLabel("Body type: minivan");
+		bodyLabel = new JLabel("Body type: "+car.getCar().getBodyType());
 		bodyLabel.setFont(Styles.Fonts.TEXT);
 		layout.setConstraints(bodyLabel, constraints);
 		add(bodyLabel);
 		
-		petrolLabel = new JLabel("Petrol type: GAS");
+		petrolLabel = new JLabel("Petrol type: "+car.getCar().getPetrolType());
 		petrolLabel.setFont(Styles.Fonts.TEXT);
 		layout.setConstraints(petrolLabel, constraints);
 		add(petrolLabel);
 		
-		transmissionLabel = new JLabel("Transmission: mechanical");
+		transmissionLabel = new JLabel("Transmission: "+car.getCar().getTransmissionType());
 		transmissionLabel.setFont(Styles.Fonts.TEXT);
 		layout.setConstraints(transmissionLabel, constraints);
 		add(transmissionLabel);
 		
-		costLabel = new JLabel("Cost: 3000$");
+		costLabel = new JLabel("Cost: "+car.getCostCar());
 		costLabel.setFont(Styles.Fonts.TEXT);
 		layout.setConstraints(costLabel, constraints);
 		add(costLabel);
@@ -85,7 +89,7 @@ public class CarCell extends JPanel {
 		setBorder(BorderFactory.createLineBorder(Styles.Colors.BLUE, 3));
 	}
 	
-	public CarCell(ApplicationFrame frame) {
-		this(frame, true);
+	public CarCell(ApplicationFrame frame, Present car) {
+		this(frame, car, true);
 	}
 }

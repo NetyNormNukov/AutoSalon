@@ -15,6 +15,8 @@ import javax.swing.JTextField;
 import javax.swing.SpinnerNumberModel;
 import javax.swing.border.EmptyBorder;
 
+import entities.Car;
+import entities.Present;
 import gui.ApplicationFrame;
 import gui.Button;
 import gui.Styles;
@@ -94,7 +96,7 @@ public class SellingPage extends Page {
 			carLabel.setFont(Styles.Fonts.MENU);
 			carPanel.add(carLabel);
 			
-			carCell = new CarCell(parent, false);
+			carCell = new CarCell(parent, new Present(), false);
 			carPanel.add(carCell);
 			
 			layout.setConstraints(carPanel, constraints);

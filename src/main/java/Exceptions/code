@@ -1,0 +1,11 @@
+try {
+    manager.openConnection();
+} catch (ClassNotFoundException | SQLException throwables) {
+    throwables.printStackTrace();
+} finally {
+    try {
+        manager.close();
+    } catch (SQLException throwables) {
+        throwables.printStackTrace();
+    }
+}

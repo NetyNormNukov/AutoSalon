@@ -352,10 +352,14 @@ public class MySQLManager {
         HashMap<Integer, Integer> gain = new HashMap<Integer, Integer>();
         try {
             conn.setAutoCommit(false);
-            String sql = "INSERT INTO car (id_type_body, id_mark, id_transmission, id_petrol, id_type_drive, model, region, engine_volume, YEAR, seats_number, door_number, color)\n" +
-                    "VALUES ((SELECT id_type_body FROM type_body WHERE type_body = '" + bodyType + "'), (SELECT id_mark FROM auto_mark WHERE name_mark = '" + nameMark + "'), (SELECT id_transmission FROM transmission_type WHERE transmission_type = '" + transmissionType + "'),\n" +
-                    "(SELECT id_petrol FROM petrol_type WHERE petrol_type = '" + petrolType + "'), (SELECT id_type_drive FROM type_drive WHERE type_drive = '" + driveType + "'), " + model + " , " + region + ", Double.parseDouble(engineVolume) , Integer.parseInt(year) , " +
-                    "Integer.parseInt(seatsNumber), Integer.parseInt(doorNumber), " + color + ")";
+            String sql = "SELECT `cost_car`.id_car, SUM(uni.count_car), SUM(uni.cost_car), `auto_mark`.`name_mark`, model, color,  region, `engine_volume`, `year`,\n" +
+                    "`type_body`.`type_body`, `transmission_type`.`transmission_type`, `petrol_type`.`petrol_type`, `type_drive`.`type_drive`, `seats_number`, `door_number`\n" +
+                    "FROM uni INNER JOIN cost_car ON uni.id = cost_car.id_cost_car INNER JOIN car ON cost_car.id_car = car.id_car\n" +
+                    "INNER JOIN type_body ON car.`id_type_body` = type_body.id_type_body\n" +
+                    "INNER JOIN `auto_mark` ON car.`id_mark` = `auto_mark`.`id_mark`\n" +
+                    "INNER JOIN `transmission_type` ON car.`id_transmission` = `transmission_type`.`id_transmission`\n" +
+                    "INNER JOIN `petrol_type` ON `car`.`id_petrol` = `petrol_type`.`id_petrol`\n" +
+                    "INNER JOIN `type_drive` ON `car`.`id_type_drive` = `type_drive`.`id_type_drive`";
             stmt = conn.createStatement();
             rs = stmt.executeQuery(sql);
             while (rs.next()){
@@ -379,6 +383,31 @@ public class MySQLManager {
             String sql = "SELECT `cost_car`.id_car, SUM(uni.count_car), SUM(uni.cost_car)\n" +
                     "FROM uni INNER JOIN cost_car ON uni.id = cost_car.id_cost_car\n" +
                     "GROUP BY uni.id";
+            stmt = conn.createStatement();
+            rs = stmt.executeQuery(sql);
+            while (rs.next()){
+                Present present = new Present();
+                Car car = getCarById(rs.getInt(1));
+                present.setCar(car);
+                present.setCountCar(rs.getInt(2));
+                present.setCostCar(rs.getInt(3));
+                presents.add(present);
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        } finally {
+            if (stmt != null){ stmt.close(); }
+            if (rs != null) { rs.close(); }
+        }
+        return presents;
+    }
+
+    public ArrayList<Present> presentBySQL(String sql) throws SQLException {
+        Statement stmt = null;
+        ResultSet rs = null;
+        ArrayList<Present> presents = new ArrayList<>();
+        try {
+            conn.setAutoCommit(false);
             stmt = conn.createStatement();
             rs = stmt.executeQuery(sql);
             while (rs.next()){
@@ -641,35 +670,39 @@ public class MySQLManager {
         return car;
     }
 
-    public Car getCarBySql(String sql) throws SQLException {
+    public ArrayList<Car> getCarBySql(String sql) throws SQLException {
         Statement stmt = null;
         ResultSet rs = null;
-        Car car = new Car();
+        ArrayList<Car> cars = new ArrayList<>();
         try {
             conn.setAutoCommit(false);
             stmt = conn.createStatement();
             rs = stmt.executeQuery(sql);
-            rs.next();
+            while (rs.next()){
+                Car car = new Car();
+                car.setNameMark(rs.getString("name_mark"));
+                car.setModel(rs.getString("model"));
+                car.setYear(rs.getInt("year"));
+                car.setBodyType(rs.getString("type_body"));
+                car.setColor(rs.getString("color"));
+                car.setDoorNumber(Integer.parseInt(rs.getString("door_number")));
+                car.setDriveType(rs.getString("type_drive"));
+                car.setEngineVolume(Double.parseDouble(rs.getString("engine_volume")));
+                car.setPetrolType(rs.getString("petrol_type"));
+                car.setRegion(rs.getString("region"));
+                car.setSeatsNumber(Integer.parseInt(rs.getString("seats_number")));
+                car.setTransmissionType(rs.getString("transmission_type"));
+                cars.add(car);
+            }
 //            System.out.println(rs.getString());
-            car.setNameMark(rs.getString("name_mark"));
-            car.setModel(rs.getString("model"));
-            car.setYear(rs.getInt("year"));
-            car.setBodyType(rs.getString("type_body"));
-            car.setColor(rs.getString("color"));
-            car.setDoorNumber(Integer.parseInt(rs.getString("door_number")));
-            car.setDriveType(rs.getString("type_drive"));
-            car.setEngineVolume(Double.parseDouble(rs.getString("engine_volume")));
-            car.setPetrolType(rs.getString("petrol_type"));
-            car.setRegion(rs.getString("region"));
-            car.setSeatsNumber(Integer.parseInt(rs.getString("seats_number")));
-            car.setTransmissionType(rs.getString("transmission_type"));
+
         } catch (Exception e) {
             e.printStackTrace();
         } finally {
             if (stmt != null){ stmt.close(); }
             if (rs != null) { rs.close(); }
         }
-        return car;
+        return cars;
     }
 
     public ArrayList<Car> getCarsFromSQLStatement() throws SQLException {
