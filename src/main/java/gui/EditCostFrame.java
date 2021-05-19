@@ -55,7 +55,7 @@ public class EditCostFrame extends JDialog {
                 manager.openConnection();
                 int cost = (int) costSpinner.getValue();
                 manager.updateCostCarByCost(present, cost);
-                page.costLabel.setText("cost: "+cost);
+                page.costLabel.setText("cost: "+cost+" ");
             } catch (ClassNotFoundException | SQLException | CarNotFoundException e) {
                 e.printStackTrace();
             } finally {

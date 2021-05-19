@@ -235,7 +235,7 @@ public class SQLBuilder implements Cloneable{
             }
         }
         SQL += "\nGROUP BY uni.id";
-
+        SQL += "\nORDER BY year DESC";
         System.out.println("count = " + count + "count empty: " + countEmptyParam);
         return SQL;
     }

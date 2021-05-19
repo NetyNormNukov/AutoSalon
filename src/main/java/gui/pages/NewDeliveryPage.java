@@ -187,6 +187,7 @@ public class NewDeliveryPage extends Page {
 									car.setCountCar((int) countSpinner.getValue());
 									sqlmanager.insertIntoCostCar(id_car, (int) costSpinner.getValue(), (int) cost_sale_Spinner.getValue());
 								} catch (SQLException | CarNotFoundException | IdNotFoundException e){
+
 									car = sqlmanager.insertIntoCarAndGetNewPresent(
 											markBox.getItemAt(markBox.getSelectedIndex()),
 											modelField.getText(),

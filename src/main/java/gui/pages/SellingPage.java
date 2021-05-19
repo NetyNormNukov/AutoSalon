@@ -27,21 +27,24 @@ import gui.Styles;
 public class SellingPage extends Page {
 	private static final long serialVersionUID = 5545613204431814337L;
 	private JScrollPane scrollPane;
-	private int count;
-	private double cost;
-	private Car car;
+//	private int count;
+//	private double cost;
+//	private Car car;
+	private Present present;
 	private ContentPanel contentPanel;
 	public SellingPage(ApplicationFrame parent, Present present) {
-		this(parent, present.getCar(), present.getCountCar(), present.getCostCar());
+		super(parent);
+		this.present = present;
+		scrollPane = new JScrollPane(new ContentPanel());
+		add(scrollPane);
 	}
-	public SellingPage(ApplicationFrame parent, Car car, int count, double cost){
+	/*public SellingPage(ApplicationFrame parent, Car car, int count, double cost){
 		super(parent);
 		this.car = car;
 		this.count = count;
 		this.cost = cost;
-		scrollPane = new JScrollPane(new ContentPanel());
-		add(scrollPane);
-	}
+
+	}*/
 	private class ContentPanel extends JPanel {
 		private static final long serialVersionUID = 8444530915071096626L;
 		private JPanel buttonsPanel;
@@ -109,10 +112,7 @@ public class SellingPage extends Page {
 			carLabel = new JLabel("car: ");
 			carLabel.setFont(Styles.Fonts.MENU);
 			carPanel.add(carLabel);
-			Present present = new Present();
-			present.setCar(car);
-			present.setCountCar(count);
-			present.setCostCar(cost);
+
 			carCell = new CarCell(parent, present, false);
 			carPanel.add(carCell);
 			
@@ -172,7 +172,7 @@ public class SellingPage extends Page {
 											(int) countSpinner.getValue(),
 											annotationField.getText(),
 											carCell.getCar().getCar().getId(),
-											carCell.getCar().getCostCar());
+											carCell.getCar().getCostCar(), carCell.getCar().getPrevCostCar());
 					} catch (ClassNotFoundException | SQLException throwables) {
 						throwables.printStackTrace();
 					} finally {

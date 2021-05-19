@@ -371,6 +371,7 @@ public class CatalogPage extends Page {
 						for (int i = 0; i < cars.size(); i++) {
 							if(cars.get(i).getCountCar() <= 0){
 								cars.remove(i);
+								i=0;
 							}
 						}
 						for (int i = 0, x = 0; i < cars.size(); i++, x++) {

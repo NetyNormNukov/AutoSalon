@@ -141,7 +141,7 @@ public class CarPage extends Page {
 		if(selling) {
 			editButton = new Button(" edit cost ", Styles.Fonts.MENU, Styles.Colors.WHITE, Styles.Colors.BLUE, event -> new EditCostFrame(parent, this));
 			buttonsPanel.add(editButton);
-			sellingButton = new Button("selling > ", Styles.Fonts.MENU, Styles.Colors.WHITE, Styles.Colors.BLUE, event -> parent.setPage(new SellingPage(parent, car.getCar(), car.getCountCar(), car.getCostCar())));
+			sellingButton = new Button("selling > ", Styles.Fonts.MENU, Styles.Colors.WHITE, Styles.Colors.BLUE, event -> parent.setPage(new SellingPage(parent, car)));
 			buttonsPanel.add(sellingButton);
 		}
 		constraints.insets.left = 15;

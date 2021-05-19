@@ -400,11 +400,12 @@ public class MySQLManager {
         return car;
     }
 
-    public void insertIntoOut(int manager, int customer, int count, String annotation, int car, double cost ) throws SQLException {
+    public void insertIntoOut(int manager, int customer, int count, String annotation, int car, double cost, double costbuy ) throws SQLException {
         String sql = "INSERT INTO `out`(id_m, id_customer, id_cost_car, date_deal, count, annotation) \n" +
                 "VALUES ('" + manager + "', '" + customer + "', (SELECT id_cost_car\n" +
                 "FROM cost_car\n" +
-                "WHERE cost = '" + cost + "' AND id_car = '" + car + "'), NOW(), '" + count + "', '" + annotation + "' )";
+                "WHERE cost_sell = '" + cost + "' AND id_car = '" + car + "' AND cost = '" + costbuy + "'), NOW(), '" + count + "', '" + annotation + "' )";
+        System.out.println(sql);
         Query(sql);
     }
 

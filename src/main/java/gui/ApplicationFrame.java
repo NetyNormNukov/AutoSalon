@@ -45,7 +45,7 @@ public class ApplicationFrame extends JFrame {
         contentPane.add(currentPage, BorderLayout.CENTER);
         setContentPane(contentPane);
 //        setVisible(true);
-        new AuthorizationFrame(this);
+      	new AuthorizationFrame(this);
     }
     public void setPage(Page newPage) {
     	contentPane.remove(currentPage);
@@ -81,7 +81,7 @@ public class ApplicationFrame extends JFrame {
 			super(new BorderLayout());	        
 	        titlePanel = new JPanel();
 	        titlePanel.setBackground(Styles.Colors.BLUE);
-	        JLabel title = new JLabel("auto salon ");
+	        JLabel title = new JLabel("Auto salon ");
 	        title.setFont(Styles.Fonts.TITLE);        
 	        title.setForeground(Styles.Colors.WHITE);
 	        titlePanel.add(title);
