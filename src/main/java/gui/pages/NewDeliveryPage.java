@@ -164,7 +164,7 @@ public class NewDeliveryPage extends Page {
 						try {
 							sqlmanager.openConnection();
 							Present car = new Present();
-							if (carsPanel.cars.size() == 0) {//TODO add if
+							if (carsPanel.cars.size() == 0) {
 								int id_car;
 								try{
 									id_car = sqlmanager.getIdCarByAllParams(

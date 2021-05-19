@@ -569,7 +569,7 @@ public class MySQLManager {
     public ArrayList<String> getAutoMark() throws SQLException {
         Statement stmt = null;
         ResultSet rs = null;
-        ArrayList<String> autoMark = new ArrayList<String>();
+        ArrayList<String> autoMark = new ArrayList<>();
         try {
             String sql = "SELECT * from auto_mark";
             stmt = conn.createStatement();
@@ -631,7 +631,7 @@ public class MySQLManager {
         ResultSet rs = null;
         ArrayList<String> color = new ArrayList<String>();
         try {
-            String sql = "SELECT DISTINCT (car.color) FROM car";
+            String sql = "SELECT color FROM color";
             stmt = conn.createStatement();
             rs = stmt.executeQuery(sql);
             while (rs.next()){
@@ -763,12 +763,6 @@ public class MySQLManager {
             rs.next();
             car.setNameMark(rs.getString("name_mark"));
             car.setModel(rs.getString("model"));
-//            Date date = new Date();
-//            try{
-//                 date = new SimpleDateFormat("yyyy-MM-dd").parse(rs.getString("year"));
-//            }catch(Exception e){
-//                System.out.println(e);
-//            }
             car.setYear(rs.getInt("year"));
             car.setBodyType(rs.getString("type_body"));
             car.setColor(rs.getString("color"));
