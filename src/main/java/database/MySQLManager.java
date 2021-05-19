@@ -1,5 +1,6 @@
 package database;
 
+import Exceptions.CarNotFoundException;
 import Exceptions.IdNotFoundException;
 import entities.*;
 import java.sql.*;
@@ -407,6 +408,57 @@ public class MySQLManager {
         Query(sql);
     }
 
+    public void updateCostCarByCost(Present present, int newSellCost) throws SQLException, CarNotFoundException {
+        Car car = present.getCar();
+        int id = getIdCarByAllParams(car.getNameMark(), car.getModel(), car.getColor(), car.getRegion(), car.getEngineVolume() + "",
+                car.getYear() + "", car.getBodyType(),car.getTransmissionType(), car.getPetrolType(), car.getDriveType(),
+                car.getSeatsNumber() + "", car.getDoorNumber() + "");
+
+        String sql = "UPDATE cost_car\n" +
+                "SET cost_sell = '" + newSellCost + "'\n" +
+                "WHERE id_car = ('" + id + "') AND cost = '" + present.getPrevCostCar()  + "' AND cost_sell = '" + present.getCostCar() + "'";
+
+        Query(sql);
+    }
+
+    public int getIdCarByAllParams(String nameMark, String model, String color, String region, String engineVolume, String year, String bodyType,
+                                    String transmissionType, String petrolType, String driveType, String seatsNumber, String doorNumber) throws SQLException, CarNotFoundException{
+        Statement stmt = null;
+        ResultSet rs = null;
+        int id = 0;
+        try {
+            conn.setAutoCommit(false);
+            stmt = conn.createStatement();
+            String sql = "SELECT id_car\n" +
+                    "FROM car\n" +
+                    "INNER JOIN type_body ON car.`id_type_body` = type_body.id_type_body\n" +
+                    "INNER JOIN `auto_mark` ON car.`id_mark` = `auto_mark`.`id_mark`\n" +
+                    "INNER JOIN `transmission_type` ON car.`id_transmission` = `transmission_type`.`id_transmission`\n" +
+                    "INNER JOIN `petrol_type` ON `car`.`id_petrol` = `petrol_type`.`id_petrol`\n" +
+                    "INNER JOIN `type_drive` ON `car`.`id_type_drive` = `type_drive`.`id_type_drive`\n" +
+                    "WHERE `name_mark` = '" + nameMark +"' AND model = '" + model +"' AND color = '" + color +"' AND region = '" + region +"' " +
+                    "AND `engine_volume` = '" + engineVolume +"' AND  `year` = '" + year +"' AND\n" +
+                    "`type_body` = '" + bodyType +"' AND `transmission_type` = '" + transmissionType +"' AND  `petrol_type` = '" + petrolType +"' " +
+                    "AND `type_drive` = '" + driveType +"' AND `seats_number` = '" + seatsNumber +"' AND `door_number` = '" + doorNumber +"'\n" ;
+            stmt = conn.createStatement();
+            System.out.println(sql);
+            rs = stmt.executeQuery(sql);
+            rs.next();
+            id = rs.getInt(1);
+
+            if (id == 0){
+                throw new CarNotFoundException();
+            }
+
+        } catch (Exception e){
+            e.printStackTrace();
+        } finally {
+            if (stmt != null){ stmt.close(); }
+            if (rs != null) { rs.close(); }
+        }
+        return id;
+    }
+
     public void insertIntoIn(String seller, int count, String annotation, int car, double cost ) throws SQLException {
         String sql = "INSERT INTO `in`( id_seller, id_cost_car, date_deal, count, annotation) \n" +
                 "VALUES ( (SELECT id_seller\n" +
@@ -444,6 +496,12 @@ public class MySQLManager {
             if (rs != null) { rs.close(); }
         }
         return cust;
+    }
+    public void insertIntoCostCar(int id_car, int cost, int costSell) throws SQLException {
+        String sql = "INSERT INTO cost_car(id_car, cost, cost_sell) \n" +
+                "VALUES ('" + id_car + "', '" + cost + "', '" + costSell + "') ";
+        System.out.println(sql);
+        Query(sql);
     }
 
     public void insertIntoSeller(String name, String req, String address, String phoneNumber, String email, String bancAcccount ) throws SQLException {
@@ -496,6 +554,7 @@ public class MySQLManager {
                 present.setCar(car);
                 present.setCountCar(rs.getInt(2));
                 present.setCostCar(rs.getInt(3));
+                present.setPrevCostCar(rs.getInt(4));
                 presents.add(present);
             }
         } catch (Exception e) {
@@ -673,7 +732,7 @@ public class MySQLManager {
         return presents;
     }
 
-    public Car getCarById(int id) throws SQLException {
+    public Car getCarById(int id) throws SQLException, IdNotFoundException {
         Statement stmt = null;
         ResultSet rs = null;
         Car car = new Car();

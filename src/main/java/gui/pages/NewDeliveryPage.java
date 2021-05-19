@@ -18,6 +18,8 @@ import javax.swing.SpinnerNumberModel;
 import javax.swing.event.DocumentEvent;
 import javax.swing.event.DocumentListener;
 
+import Exceptions.CarNotFoundException;
+import Exceptions.IdNotFoundException;
 import database.MySQLManager;
 import database.SQLBuilder;
 import entities.Car;
@@ -161,29 +163,52 @@ public class NewDeliveryPage extends Page {
 						MySQLManager sqlmanager = new MySQLManager();
 						try {
 							sqlmanager.openConnection();
-							Present car;
-							if (carsPanel.cars.size() == 0) {
-								car = sqlmanager.insertIntoCarAndGetNewPresent(
-										markBox.getItemAt(markBox.getSelectedIndex()),
-										modelField.getText(),
-										colorBox.getItemAt(colorBox.getSelectedIndex()),
-										regionField.getText(),
-										engineField.getText(),
-										yearSpinner.getValue()+"",
-										bodyBox.getItemAt(bodyBox.getSelectedIndex()),
-										transmissionBox.getItemAt(transmissionBox.getSelectedIndex()),
-										petrolBox.getItemAt(petrolBox.getSelectedIndex()),
-										typeOfDriveBox.getItemAt(typeOfDriveBox.getSelectedIndex()),
-										seatsBox.getItemAt(seatsBox.getSelectedIndex()),
-										doorsBox.getItemAt(doorsBox.getSelectedIndex()),
-										(int) costSpinner.getValue(),
-										(int) countSpinner.getValue()
-								);
+							Present car = new Present();
+							if (carsPanel.cars.size() == 0) {//TODO add if
+								int id_car;
+								try{
+									id_car = sqlmanager.getIdCarByAllParams(
+											markBox.getItemAt(markBox.getSelectedIndex()),
+											modelField.getText(),
+											colorBox.getItemAt(colorBox.getSelectedIndex()),
+											regionField.getText(),
+											engineField.getText(),
+											yearSpinner.getValue()+"",
+											bodyBox.getItemAt(bodyBox.getSelectedIndex()),
+											transmissionBox.getItemAt(transmissionBox.getSelectedIndex()),
+											petrolBox.getItemAt(petrolBox.getSelectedIndex()),
+											typeOfDriveBox.getItemAt(typeOfDriveBox.getSelectedIndex()),
+											seatsBox.getItemAt(seatsBox.getSelectedIndex()),
+											doorsBox.getItemAt(doorsBox.getSelectedIndex())
+									);
+									if(id_car == 0) throw new CarNotFoundException();
+									car.setCar(sqlmanager.getCarById(id_car));
+									car.setCostCar((int) costSpinner.getValue());
+									car.setCountCar((int) countSpinner.getValue());
+									sqlmanager.insertIntoCostCar(id_car, (int) costSpinner.getValue(), (int) cost_sale_Spinner.getValue());
+								} catch (SQLException | CarNotFoundException | IdNotFoundException e){
+									car = sqlmanager.insertIntoCarAndGetNewPresent(
+											markBox.getItemAt(markBox.getSelectedIndex()),
+											modelField.getText(),
+											colorBox.getItemAt(colorBox.getSelectedIndex()),
+											regionField.getText(),
+											engineField.getText(),
+											yearSpinner.getValue()+"",
+											bodyBox.getItemAt(bodyBox.getSelectedIndex()),
+											transmissionBox.getItemAt(transmissionBox.getSelectedIndex()),
+											petrolBox.getItemAt(petrolBox.getSelectedIndex()),
+											typeOfDriveBox.getItemAt(typeOfDriveBox.getSelectedIndex()),
+											seatsBox.getItemAt(seatsBox.getSelectedIndex()),
+											doorsBox.getItemAt(doorsBox.getSelectedIndex()),
+											(int) costSpinner.getValue(),
+											(int) countSpinner.getValue()
+									);
+									sqlmanager.insertIntoCostCar(car.getCar().getId(), (int) costSpinner.getValue(), (int) cost_sale_Spinner.getValue());
+								}
 
 							} else {
 								car = carsPanel.cars.get(0);
 							}
-							System.out.println("external" + car.toString());
 							sqlmanager.insertIntoIn((String) sellerBox.getSelectedItem(), (int) countSpinner.getValue(), annotationField.getText(),
 													car.getCar().getId(), (int) costSpinner.getValue());
 						} catch (ClassNotFoundException | SQLException throwables) {

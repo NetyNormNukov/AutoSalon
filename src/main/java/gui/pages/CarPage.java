@@ -28,7 +28,7 @@ public class CarPage extends Page {
 	private JLabel engineLabel;
 	private JLabel seatsLabel;
 	private JLabel doorsLabel;
-	private JLabel costLabel;
+	public JLabel costLabel;
 	private JLabel countLabel;
 	
 	private JPanel buttonsPanel;
@@ -36,18 +36,17 @@ public class CarPage extends Page {
 	private Button editButton;
 	private Button sellingButton;
 
-	private int count;
-	private double cost;
-	private Car car;
+//	private int count;
+//	private double cost;
+//	private Car car;
+	public Present car;
 	
 	public CarPage(ApplicationFrame parent, Present present) {
 		this(parent, present, true);
 	}
-	public CarPage(ApplicationFrame parent, Car car, int count, double cost, boolean selling){
+	public CarPage(ApplicationFrame parent, Present present, boolean selling) {
 		super(parent);
-		this.car = car;
-		this.count = count;
-		this.cost = cost;
+		this.car = present;
 		GridBagLayout layout = new GridBagLayout();
 		GridBagConstraints constraints = new GridBagConstraints();
 
@@ -65,73 +64,73 @@ public class CarPage extends Page {
 		constraints.weightx = 1;
 		constraints.weighty = 1;
 
-		markLabel = new JLabel("mark: "+car.getNameMark().toLowerCase() + " ");
+		markLabel = new JLabel("mark: "+car.getCar().getNameMark().toLowerCase() + " ");
 		markLabel.setFont(Styles.Fonts.MENU);
 		layout.setConstraints(markLabel, constraints);
 		add(markLabel);
 
 		constraints.insets.top = 1;
-		modelLabel = new JLabel("model: "+car.getModel().toLowerCase() + " ");
+		modelLabel = new JLabel("model: "+car.getCar().getModel().toLowerCase() + " ");
 		modelLabel.setFont(Styles.Fonts.MENU);
 		layout.setConstraints(modelLabel, constraints);
 		add(modelLabel);
 
-		regionLabel = new JLabel("manufacture region: "+car.getRegion().toLowerCase() + " ");
+		regionLabel = new JLabel("manufacture region: "+car.getCar().getRegion().toLowerCase() + " ");
 		regionLabel.setFont(Styles.Fonts.MENU);
 		layout.setConstraints(regionLabel, constraints);
 		add(regionLabel);
 
-		yearLabel = new JLabel("year: "+car.getYear() + " ");
+		yearLabel = new JLabel("year: "+car.getCar().getYear() + " ");
 		yearLabel.setFont(Styles.Fonts.MENU);
 		layout.setConstraints(yearLabel, constraints);
 		add(yearLabel);
 
-		colorLabel = new JLabel("color: "+car.getColor().toLowerCase() + " ");
+		colorLabel = new JLabel("color: "+car.getCar().getColor().toLowerCase() + " ");
 		colorLabel.setFont(Styles.Fonts.MENU);
 		layout.setConstraints(colorLabel, constraints);
 		add(colorLabel);
 
-		bodyLabel = new JLabel("body type: "+car.getBodyType().toLowerCase() + " ");
+		bodyLabel = new JLabel("body type: "+car.getCar().getBodyType().toLowerCase() + " ");
 		bodyLabel.setFont(Styles.Fonts.MENU);
 		layout.setConstraints(bodyLabel, constraints);
 		add(bodyLabel);
 
-		petrolLabel = new JLabel("petrol type:"+car.getPetrolType().toLowerCase() + " ");
+		petrolLabel = new JLabel("petrol type:"+car.getCar().getPetrolType().toLowerCase() + " ");
 		petrolLabel.setFont(Styles.Fonts.MENU);
 		layout.setConstraints(petrolLabel, constraints);
 		add(petrolLabel);
 
-		transmissionLabel = new JLabel("transmission type: "+car.getTransmissionType().toLowerCase() + " ");
+		transmissionLabel = new JLabel("transmission type: "+car.getCar().getTransmissionType().toLowerCase() + " ");
 		transmissionLabel.setFont(Styles.Fonts.MENU);
 		layout.setConstraints(transmissionLabel, constraints);
 		add(transmissionLabel);
 
-		typeOfDriveLabel = new JLabel("type of drive: "+car.getDriveType().toLowerCase() + " ");
+		typeOfDriveLabel = new JLabel("type of drive: "+car.getCar().getDriveType().toLowerCase() + " ");
 		typeOfDriveLabel.setFont(Styles.Fonts.MENU);
 		layout.setConstraints(typeOfDriveLabel, constraints);
 		add(typeOfDriveLabel);
 
-		engineLabel = new JLabel("engine volume: "+car.getEngineVolume() + " ");
+		engineLabel = new JLabel("engine volume: "+car.getCar().getEngineVolume() + " ");
 		engineLabel.setFont(Styles.Fonts.MENU);
 		layout.setConstraints(engineLabel, constraints);
 		add(engineLabel);
 
-		seatsLabel = new JLabel("number of seats: "+car.getSeatsNumber() + " ");
+		seatsLabel = new JLabel("number of seats: "+car.getCar().getSeatsNumber() + " ");
 		seatsLabel.setFont(Styles.Fonts.MENU);
 		layout.setConstraints(seatsLabel, constraints);
 		add(seatsLabel);
 
-		doorsLabel = new JLabel("number of doors: "+car.getDoorNumber() + " ");
+		doorsLabel = new JLabel("number of doors: "+car.getCar().getDoorNumber() + " ");
 		doorsLabel.setFont(Styles.Fonts.MENU);
 		layout.setConstraints(doorsLabel, constraints);
 		add(doorsLabel);
 
-		costLabel = new JLabel("cost: "+this.cost + " ");
+		costLabel = new JLabel("cost: "+car.getCostCar() + " ");
 		costLabel.setFont(Styles.Fonts.MENU);
 		layout.setConstraints(costLabel, constraints);
 		add(costLabel);
 
-		countLabel = new JLabel("count: "+this.count+ " ");
+		countLabel = new JLabel("count: "+car.getCountCar()+ " ");
 		countLabel.setFont(Styles.Fonts.MENU);
 		layout.setConstraints(countLabel, constraints);
 		add(countLabel);
@@ -140,16 +139,13 @@ public class CarPage extends Page {
 		backButton = new Button("< back ", Styles.Fonts.MENU, Styles.Colors.WHITE, Styles.Colors.BLUE, event -> parent.back());
 		buttonsPanel.add(backButton);
 		if(selling) {
-			editButton = new Button(" edit cost ", Styles.Fonts.MENU, Styles.Colors.WHITE, Styles.Colors.BLUE, event -> new EditCostFrame(parent, new Present()));
+			editButton = new Button(" edit cost ", Styles.Fonts.MENU, Styles.Colors.WHITE, Styles.Colors.BLUE, event -> new EditCostFrame(parent, this));
 			buttonsPanel.add(editButton);
-			sellingButton = new Button("selling > ", Styles.Fonts.MENU, Styles.Colors.WHITE, Styles.Colors.BLUE, event -> parent.setPage(new SellingPage(parent, car, count, cost)));
+			sellingButton = new Button("selling > ", Styles.Fonts.MENU, Styles.Colors.WHITE, Styles.Colors.BLUE, event -> parent.setPage(new SellingPage(parent, car.getCar(), car.getCountCar(), car.getCostCar())));
 			buttonsPanel.add(sellingButton);
 		}
 		constraints.insets.left = 15;
 		layout.setConstraints(buttonsPanel, constraints);
 		add(buttonsPanel);
-	}
-	public CarPage(ApplicationFrame parent, Present present, boolean selling) {
-		this(parent, present.getCar(), present.getCountCar(), present.getCostCar(), selling);
 	}
 }

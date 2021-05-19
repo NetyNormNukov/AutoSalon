@@ -184,8 +184,9 @@ public class SalesPage extends Page {
 									event -> parent.setPage(new CustomerPage(parent, sale.getCustomer())) );
 							layout.setConstraints(cell, constraints);
 							add(cell);
+							Present car = new Present(sale.getCar(), sale.getCount(), sale.getCost());
 							cell = new TableCell(sales.get(i-1).getCar().getNameMark() + " " +sales.get(i-1).getCar().getModel(), 30,
-									event -> parent.setPage(new CarPage(parent, sale.getCar(), sale.getCount(), sale.getCost(), false)) );
+									event -> parent.setPage(new CarPage(parent, car, false)) );
 							layout.setConstraints(cell, constraints);
 							add(cell);
 							cell = new TableCell(sales.get(i-1).getCost()+"");

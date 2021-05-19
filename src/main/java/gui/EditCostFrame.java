@@ -1,11 +1,13 @@
 package gui;
 
+import Exceptions.CarNotFoundException;
 import database.MySQLManager;
 import entities.Present;
 import gui.ApplicationFrame;
 import gui.Button;
 import gui.OptionPane;
 import gui.Styles;
+import gui.pages.CarPage;
 import gui.pages.CatalogPage;
 
 import javax.swing.*;
@@ -26,12 +28,12 @@ public class EditCostFrame extends JDialog {
 
 	private Present present;
 
-    public EditCostFrame(ApplicationFrame parent, Present present) {
+    public EditCostFrame(ApplicationFrame parent, CarPage page) {
     	super(parent, true);
-    	this.present = present;
+    	this.present = page.car;
         setTitle("Edit Cost");
-        setDefaultCloseOperation(DO_NOTHING_ON_CLOSE);        
-        setBounds(this.getOwner().getX() + this.getOwner().getWidth() / 3, this.getOwner().getY() + this.getOwner().getHeight() / 4, 350, 210);
+        setDefaultCloseOperation(DISPOSE_ON_CLOSE);
+        setBounds(this.getOwner().getX() + this.getOwner().getWidth() / 3, this.getOwner().getY() + this.getOwner().getHeight() / 4, 300, 160);
         setResizable(false);
 
         contentPane = new JPanel(new BorderLayout());
@@ -41,13 +43,30 @@ public class EditCostFrame extends JDialog {
         contentPane.add(headPanel, BorderLayout.NORTH);        
         
         centerPanel = new JPanel(new FlowLayout(FlowLayout.CENTER, 5, 12));
-        costSpinner = new JSpinner(new SpinnerNumberModel(50000, 0, 1_000_000, 100));
+        costSpinner = new JSpinner(new SpinnerNumberModel((int)present.getCostCar(), 0, 1_000_000, 100));
         costSpinner.setFont(Styles.Fonts.TEXT);
         centerPanel.add(costSpinner);
         contentPane.add(centerPanel, BorderLayout.CENTER);
 
         footPanel = new JPanel(new FlowLayout(FlowLayout.CENTER, 5, 12));
-        acceptButton = new Button("accept ", Styles.Fonts.BUTTON, Styles.Colors.WHITE, Styles.Colors.BLUE, event -> {});
+        acceptButton = new Button("accept ", Styles.Fonts.BUTTON, Styles.Colors.WHITE, Styles.Colors.BLUE, event -> {
+            MySQLManager manager = new MySQLManager();
+            try {
+                manager.openConnection();
+                int cost = (int) costSpinner.getValue();
+                manager.updateCostCarByCost(present, cost);
+                page.costLabel.setText("cost: "+cost);
+            } catch (ClassNotFoundException | SQLException | CarNotFoundException e) {
+                e.printStackTrace();
+            } finally {
+                try {
+                    manager.close();
+                } catch (SQLException throwables) {
+                    throwables.printStackTrace();
+                }
+            }
+            EditCostFrame.this.dispose();
+        });
         footPanel.add(acceptButton);
         backButton = new Button("< back ", Styles.Fonts.BUTTON, Styles.Colors.WHITE, Styles.Colors.BLUE, event -> this.dispose());
         footPanel.add(backButton);

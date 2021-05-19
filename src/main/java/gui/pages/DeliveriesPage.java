@@ -226,8 +226,9 @@ public class DeliveriesPage extends Page {
 									event -> parent.setPage(new SellerPage(parent, delivery.getSeller())) );
 							layout.setConstraints(cell, constraints);
 							add(cell);
+							Present car = new Present(delivery.getCar(), delivery.getCount(), delivery.getCost());
 							cell = new TableCell(deliveries.get(i-1).getCar().getNameMark() + " " +deliveries.get(i-1).getCar().getModel(), 30,
-									event -> parent.setPage(new CarPage(parent, delivery.getCar(), delivery.getCount(), delivery.getCost(), false)) );
+									event -> parent.setPage(new CarPage(parent, car, false)) );
 							layout.setConstraints(cell, constraints);
 							add(cell);
 							cell = new TableCell(deliveries.get(i-1).getCost()+"");
