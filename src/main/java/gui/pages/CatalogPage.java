@@ -368,7 +368,11 @@ public class CatalogPage extends Page {
 								(int) CatalogPage.this.filtersPanel.costFromSpinner.getValue(),
 								(int) CatalogPage.this.filtersPanel.costToSpinner.getValue()
 						).searchCarBy());
-
+						for (int i = 0; i < cars.size(); i++) {
+							if(cars.get(i).getCountCar() <= 0){
+								cars.remove(i);
+							}
+						}
 						for (int i = 0, x = 0; i < cars.size(); i++, x++) {
 							if(i % 5 == 0){
 								constraints.gridy = i;

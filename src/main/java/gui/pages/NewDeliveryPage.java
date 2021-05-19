@@ -101,6 +101,10 @@ public class NewDeliveryPage extends Page {
 		private JPanel costPanel;
 		private JLabel costLabel;
 		private JSpinner costSpinner;
+
+		private JPanel cost_sale_Panel;
+		private JLabel cost_sale_Label;
+		private JSpinner cost_sale_Spinner;
 		
 		private JPanel countPanel;
 		private JLabel countLabel;
@@ -175,6 +179,7 @@ public class NewDeliveryPage extends Page {
 										(int) costSpinner.getValue(),
 										(int) countSpinner.getValue()
 								);
+
 							} else {
 								car = carsPanel.cars.get(0);
 							}
@@ -479,6 +484,17 @@ public class NewDeliveryPage extends Page {
 				});
 				costPanel.add(costSpinner);
 
+				cost_sale_Label = new JLabel("cost to sell: ");
+				cost_sale_Label.setFont(Styles.Fonts.MENU);
+				costPanel.add(cost_sale_Label);
+
+				cost_sale_Spinner = new JSpinner(new SpinnerNumberModel(60000, 0, 1000000, 100));
+				cost_sale_Spinner.setFont(Styles.Fonts.TEXT);
+				cost_sale_Spinner.addChangeListener(event -> {
+					NewDeliveryPage.ContentPanel.this.refresh();
+				});
+				costPanel.add(cost_sale_Spinner);
+
 				layout.setConstraints(costPanel, constraints);
 				add(costPanel);
 
@@ -570,7 +586,8 @@ public class NewDeliveryPage extends Page {
 							1970, (int) yearSpinner.getValue(),
 							seatsBox.getItemAt(seatsBox.getSelectedIndex()),
 							doorsBox.getItemAt(doorsBox.getSelectedIndex()),
-							0, (int) costSpinner.getValue()
+							0, (int) costSpinner.getValue(),
+							(int) cost_sale_Spinner.getValue()
 							);
 					cars = manager.getPresentBySql(bulder.searchCar());
 

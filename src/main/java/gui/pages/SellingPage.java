@@ -13,6 +13,7 @@ import javax.swing.JTextField;
 import javax.swing.SpinnerNumberModel;
 import javax.swing.event.DocumentEvent;
 import javax.swing.event.DocumentListener;
+import javax.swing.text.html.Option;
 
 import database.MySQLManager;
 import entities.Car;
@@ -160,6 +161,11 @@ public class SellingPage extends Page {
 						}
 						else{
 							customer = customersPanel.customers.get(0);
+						}
+						if(((int)countSpinner.getValue()) > carCell.getCar().getCountCar()){
+							OptionPane.showMessageDialog(parent, "There is only "+carCell.getCar().getCountCar()+" cars in stock!",
+									"Error", OptionPane.ERROR_MESSAGE);
+							return;
 						}
 						manager.insertIntoOut(parent.getManager().getId(),
 												customer.getId(),

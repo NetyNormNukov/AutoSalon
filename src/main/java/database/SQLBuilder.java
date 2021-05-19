@@ -17,6 +17,7 @@ public class SQLBuilder implements Cloneable{
     private String doorsCount = "";
     private String costTo = "";
     private String costFrom = "";
+    private String costSell = "";
     private int countEmptyParam; //without SQL
 
     {
@@ -44,6 +45,33 @@ public class SQLBuilder implements Cloneable{
         this.yearTo = yearTo + "";
         this.costTo = costTo + "";
         this.costFrom = costFrom + "";
+        this.seatsCount = seatsCount;
+        this.doorsCount = doorsCount;
+        try {
+            setFieldWhichContainsAny();
+        } catch (IllegalAccessException e) {
+            e.printStackTrace();
+        } catch (CloneNotSupportedException e) {
+            e.printStackTrace();
+        }
+    }
+
+    public SQLBuilder(String nameMark, String bodyType, String transmissionType, String petrolType, String driveType,
+                      String manufacture, String color, int yearFrom, int yearTo, String seatsCount, String doorsCount,
+                      int costFrom, int costTo, int costSell) {
+
+        this.nameMark = nameMark;
+        this.bodyType = bodyType;
+        this.transmissionType = transmissionType;
+        this.petrolType = petrolType;
+        this.driveType = driveType;
+        this.manufacture = manufacture;
+        this.color = color;
+        this.yearFrom = yearFrom+"";
+        this.yearTo = yearTo + "";
+        this.costTo = costTo + "";
+        this.costFrom = costFrom + "";
+        this.costSell = costSell + "";
         this.seatsCount = seatsCount;
         this.doorsCount = doorsCount;
         try {
@@ -85,7 +113,7 @@ public class SQLBuilder implements Cloneable{
     }
 
     public String searchCarBy() throws CloneNotSupportedException, IllegalAccessException {
-        SQL += "SELECT `cost_car`.id_car, SUM(uni.count_car), cost ,`auto_mark`.`name_mark`, model, color,  region, `engine_volume`, `year`,\n" +
+        SQL += "SELECT `cost_car`.id_car, SUM(uni.count_car), cost_sell , cost , `auto_mark`.`name_mark`, model, color,  region, `engine_volume`, `year`,\n" +
                 "`type_body`.`type_body`, `transmission_type`.`transmission_type`, `petrol_type`.`petrol_type`, `type_drive`.`type_drive`, `seats_number`, `door_number`\n" +
                 "FROM uni INNER JOIN cost_car ON uni.id = cost_car.id_cost_car INNER JOIN car ON cost_car.id_car = car.id_car\n" +
                 "INNER JOIN type_body ON car.`id_type_body` = type_body.id_type_body\n" +
@@ -207,6 +235,8 @@ public class SQLBuilder implements Cloneable{
             }
         }
         SQL += "\nGROUP BY uni.id";
+
+        System.out.println("count = " + count + "count empty: " + countEmptyParam);
         return SQL;
     }
 
@@ -328,10 +358,20 @@ public class SQLBuilder implements Cloneable{
             countEmptyParam--;
 
             if (countEmptyParam == count){
-                SQL += "cost BETWEEN '"+ costFrom + "' AND '"+ costTo + "' " ;
+                SQL += "cost = '"+ costTo + "' " ;
             }
             else {
-                SQL += "cost BETWEEN '"+ costFrom + "' AND '"+ costTo + "' AND ";
+                SQL += "cost = '"+ costTo + "' AND ";
+            }
+        }
+
+        if (!costSell.equals("")) {
+            countEmptyParam--;
+            if (countEmptyParam == count){
+                SQL += "cost_sell = '" + costSell + "' ";
+            }
+            else {
+                SQL += "cost_sell = '" + costSell + "'  AND ";
             }
         }
 

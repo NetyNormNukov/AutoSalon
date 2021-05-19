@@ -15,7 +15,7 @@ public class TestConnection {
         SQLBuilder sqlBuilder = new SQLBuilder("BMW", "", "--Any--", "",
                 "", "", "", 1970, 2020, "--Any--", "", 0,200000);
 
-//        System.out.println(sqlBuilder.searchCar());;
+        System.out.println(sqlBuilder.searchCarBy());
 //        mySQLManager.insertIntoOut(2, 1, 2, "annotation", 2, 80000);
 //        mySQLManager.insertIntoIn(2, 3, "ann", 4, 50000);
 //        ArrayList <Out> outs =  mySQLManager.getOutTable("2019", "2021");

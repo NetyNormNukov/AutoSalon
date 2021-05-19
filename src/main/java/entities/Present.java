@@ -4,6 +4,15 @@ public class Present {
     private Car car;
     private int countCar;
     private double costCar;
+    private double costSell;
+
+    public double getCostSell() {
+        return costSell;
+    }
+
+    public void setCostSell(double costSell) {
+        this.costSell = costSell;
+    }
 
     public void setCountCar(int countCar) {
         this.countCar = countCar;

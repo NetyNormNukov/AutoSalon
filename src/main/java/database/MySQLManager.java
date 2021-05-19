@@ -225,7 +225,8 @@ public class MySQLManager {
                     "FROM  `in`\n" +
                     "INNER JOIN seller s on `in`.id_seller = s.id_seller\n" +
                     "INNER JOIN cost_car cc on `in`.id_cost_car = cc.id_cost_car\n" +
-                    "WHERE date_deal BETWEEN '" + yearFrom + "' AND '" + yearTo + "' AND name_seller LIKE '" + nameSeller + "%'";
+                    "WHERE date_deal BETWEEN '" + yearFrom + "' AND '" + yearTo + "' AND name_seller LIKE '" + nameSeller + "%'\n"+
+                    "ORDER BY date_deal DESC ";
             stmt = conn.createStatement();
             rs = stmt.executeQuery(sql);
             while (rs.next()){
@@ -260,12 +261,13 @@ public class MySQLManager {
         ResultSet rs = null;
         ArrayList<Out> outs = new ArrayList<Out>();
         try {
-            String sql = "SELECT `out`.id_customer, id_car,  date_deal, count, cost, annotation, `out`.id_m\n" +
+            String sql = "SELECT `out`.id_customer, id_car,  date_deal, count, cost_sell, annotation, `out`.id_m\n" +
                     "FROM  `out`\n" +
                     "INNER JOIN customer c on `out`.id_customer = c.id_customer\n" +
                     "INNER JOIN cost_car cc on `out`.id_cost_car = cc.id_cost_car\n" +
                     "INNER JOIN manager m on `out`.id_m = m.id_m\n" +
-                    "WHERE date_deal BETWEEN '" + yearFrom + "' AND '" + yearTo + "'";
+                    "WHERE date_deal BETWEEN '" + yearFrom + "' AND '" + yearTo + "'\n" +
+                    "ORDER BY date_deal DESC ";
             stmt = conn.createStatement();
             System.out.println(sql);
             rs = stmt.executeQuery(sql);

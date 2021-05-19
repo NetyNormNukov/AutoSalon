@@ -11,6 +11,7 @@ import entities.Car;
 import entities.Present;
 import gui.ApplicationFrame;
 import gui.Button;
+import gui.EditCostFrame;
 import gui.Styles;
 
 public class CarPage extends Page {
@@ -32,6 +33,7 @@ public class CarPage extends Page {
 	
 	private JPanel buttonsPanel;
 	private Button backButton;
+	private Button editButton;
 	private Button sellingButton;
 
 	private int count;
@@ -138,6 +140,8 @@ public class CarPage extends Page {
 		backButton = new Button("< back ", Styles.Fonts.MENU, Styles.Colors.WHITE, Styles.Colors.BLUE, event -> parent.back());
 		buttonsPanel.add(backButton);
 		if(selling) {
+			editButton = new Button(" edit cost ", Styles.Fonts.MENU, Styles.Colors.WHITE, Styles.Colors.BLUE, event -> new EditCostFrame(parent, new Present()));
+			buttonsPanel.add(editButton);
 			sellingButton = new Button("selling > ", Styles.Fonts.MENU, Styles.Colors.WHITE, Styles.Colors.BLUE, event -> parent.setPage(new SellingPage(parent, car, count, cost)));
 			buttonsPanel.add(sellingButton);
 		}

@@ -5,6 +5,7 @@ import javax.swing.*;
 
 import java.awt.BorderLayout;
 import java.awt.FlowLayout;
+import java.awt.event.ActionListener;
 import java.sql.SQLException;
 
 public class AuthorizationFrame extends JDialog {
@@ -25,21 +26,8 @@ public class AuthorizationFrame extends JDialog {
         setDefaultCloseOperation(DO_NOTHING_ON_CLOSE);        
         setBounds(this.getOwner().getX() + this.getOwner().getWidth() / 3, this.getOwner().getY() + this.getOwner().getHeight() / 4, 350, 210);
         setResizable(false);
-        
-        contentPane = new JPanel(new BorderLayout());
-        contentPane.setBorder(BorderFactory.createLineBorder(Styles.Colors.BLUE, 3));
-        headPanel = new JPanel(new FlowLayout(FlowLayout.CENTER, 5, 6));
-        headPanel.add(new JLabel("Enter your account data: "));
-        contentPane.add(headPanel, BorderLayout.NORTH);        
-        
-        centerPanel = new JPanel(new FlowLayout(FlowLayout.CENTER, 5, 12));
-        centerPanel.add(new JLabel("Your name: "));
-        nameField = new JTextField(20);
-        centerPanel.add(nameField);
-        centerPanel.add(new JLabel("Password:  "));
-        passwordField = new JPasswordField(20);
-        centerPanel.add(passwordField);
-        signInButton = new Button("sign in", Styles.Fonts.BUTTON, Styles.Colors.WHITE, Styles.Colors.BLUE, event -> {
+
+        ActionListener listener = event -> {
             MySQLManager manager = new MySQLManager();
             try {
                 manager.openConnection();
@@ -62,7 +50,24 @@ public class AuthorizationFrame extends JDialog {
                     throwables.printStackTrace();
                 }
             }
-        });
+        };
+
+        contentPane = new JPanel(new BorderLayout());
+        contentPane.setBorder(BorderFactory.createLineBorder(Styles.Colors.BLUE, 3));
+        headPanel = new JPanel(new FlowLayout(FlowLayout.CENTER, 5, 6));
+        headPanel.add(new JLabel("Enter your account data: "));
+        contentPane.add(headPanel, BorderLayout.NORTH);        
+        
+        centerPanel = new JPanel(new FlowLayout(FlowLayout.CENTER, 5, 12));
+        centerPanel.add(new JLabel("Your name: "));
+        nameField = new JTextField(20);
+        nameField.addActionListener(listener);
+        centerPanel.add(nameField);
+        centerPanel.add(new JLabel("Password:  "));
+        passwordField = new JPasswordField(20);
+        passwordField.addActionListener(listener);
+        centerPanel.add(passwordField);
+        signInButton = new Button("sign in", Styles.Fonts.BUTTON, Styles.Colors.WHITE, Styles.Colors.BLUE, listener);
         centerPanel.add(signInButton);  
         exitButton = new Button("exit", Styles.Fonts.BUTTON, Styles.Colors.WHITE, Styles.Colors.BLUE, event -> System.exit(0));
         centerPanel.add(exitButton);
