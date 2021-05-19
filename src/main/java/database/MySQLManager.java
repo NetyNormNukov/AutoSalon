@@ -36,36 +36,6 @@ public class MySQLManager {
         return false;
     }
 
-    public ArrayList<Customer> getCustomers() throws SQLException {
-        Statement stmt = null;
-        ResultSet rs = null;
-        ArrayList<Customer> customers = new ArrayList<>();
-        try {
-            conn.setAutoCommit(false);
-            stmt = conn.createStatement();
-            String sql = "SELECT `name_cust`, `requisites`, `address`, `phone_number`, `email`, `banc_account`" +
-                    "FROM `customer`";
-            stmt = conn.createStatement();
-            rs = stmt.executeQuery(sql);
-            while (rs.next()){
-                Customer cust = new Customer();
-                cust.setName(rs.getString(1));
-                cust.setRequisites(rs.getString(2));
-                cust.setAddress(rs.getString(3));
-                cust.setPhoneNumber(rs.getString(4));
-                cust.setEmail(rs.getString(5));
-                cust.setBankAccount(rs.getString(6));
-                customers.add(cust);
-            }
-        } catch (Exception e){
-            e.printStackTrace();
-        } finally {
-            if (stmt != null){ stmt.close(); }
-            if (rs != null) { rs.close(); }
-        }
-        return customers;
-    }
-
     public ArrayList<Customer> getCustomers(String str) throws SQLException {
         Statement stmt = null;
         ResultSet rs = null;
@@ -160,38 +130,7 @@ public class MySQLManager {
         return cust;
     }
 
-    public ArrayList<Seller> getSellers() throws SQLException {
-        Statement stmt = null;
-        ResultSet rs = null;
-        ArrayList<Seller> sellers = new ArrayList<>();
-        try {
-            conn.setAutoCommit(false);
-            stmt = conn.createStatement();
-            String sql = "SELECT  `name_seller`, `requisites`, `address`, `phone_number`, `email`, `bank_account`, id_seller\n" +
-                    "FROM seller\n";
-            stmt = conn.createStatement();
-            rs = stmt.executeQuery(sql);
-            while (rs.next()){
-                Seller seller = new Seller();
-                seller.setName(rs.getString(1));
-                seller.setRequisites(rs.getString(2));
-                seller.setAddress(rs.getString(3));
-                seller.setPhoneNumber(rs.getString(4));
-                seller.setEmail(rs.getString(5));
-                seller.setBankAccount(rs.getString(6));
-                seller.setId(rs.getInt(7));
-                sellers.add(seller);
-            }
-        } catch (Exception e){
-            e.printStackTrace();
-        } finally {
-            if (stmt != null){ stmt.close(); }
-            if (rs != null) { rs.close(); }
-        }
-        return sellers;
-    }
-
-    public ArrayList<Seller> getSellers(String string) throws SQLException {
+    public ArrayList<Seller> getSellers(String name) throws SQLException {
         Statement stmt = null;
         ResultSet rs = null;
         ArrayList<Seller> sellers = new ArrayList<>();
@@ -200,7 +139,7 @@ public class MySQLManager {
             stmt = conn.createStatement();
             String sql = "SELECT  `name_seller`, `requisites`, `address`, `phone_number`, `email`, `bank_account`, id_seller\n" +
                     "FROM seller\n" +
-                    "WHERE name_seller LIKE '" + string + "%'";
+                    "WHERE name_seller LIKE '" + name + "%'";
             stmt = conn.createStatement();
             rs = stmt.executeQuery(sql);
             while (rs.next()){
@@ -359,36 +298,6 @@ public class MySQLManager {
         return outs;
     }
 
-    public ArrayList<Manager> getManagers() throws SQLException {
-        Statement stmt = null;
-        ResultSet rs = null;
-        ArrayList<Manager> managers = new ArrayList<>();
-        try {
-            conn.setAutoCommit(false);
-            stmt = conn.createStatement();
-            String sql = "SELECT `name`, `surname`, `address`,`phone_number`,`email`,`password`\n" +
-                    "FROM `manager`";
-            stmt = conn.createStatement();
-            rs = stmt.executeQuery(sql);
-            while (rs.next()){
-                Manager manager = new Manager();
-                manager.setName(rs.getString(1));
-                manager.setSurname(rs.getString(2));
-                manager.setAddress(rs.getString(3));
-                manager.setPhoneNumber(rs.getString(4));
-                manager.setEmail(rs.getString(5));
-                manager.setPassword(rs.getString(6));
-                managers.add(manager);
-            }
-        } catch (Exception e){
-            e.printStackTrace();
-        } finally {
-            if (stmt != null){ stmt.close(); }
-            if (rs != null) { rs.close(); }
-        }
-        return managers;
-    }
-
     public Manager getManagerByPasswordAndName(String email, String password) throws SQLException {
         Statement stmt = null;
         ResultSet rs = null;
@@ -448,12 +357,6 @@ public class MySQLManager {
             if (rs != null) { rs.close(); }
         }
         return manager;
-    }
-
-    public void insertIntoAutoMark(String nameMark) throws SQLException {
-            String sql = "INSERT INTO auto_mark(name_mark) " +
-                    "VALUE ('"+nameMark+"');";
-            Query(sql);
     }
 
     public Present insertIntoCarAndGetNewPresent(String nameMark, String model, String color, String region, String engineVolume, String year, String bodyType,
@@ -577,34 +480,6 @@ public class MySQLManager {
 //        return gain;
 //    }
 
-    public ArrayList<Present> present() throws SQLException {
-        Statement stmt = null;
-        ResultSet rs = null;
-        ArrayList<Present> presents = new ArrayList<>();
-        try {
-            conn.setAutoCommit(false);
-            String sql = "SELECT `cost_car`.id_car, SUM(uni.count_car), SUM(uni.cost_car)\n" +
-                    "FROM uni INNER JOIN cost_car ON uni.id = cost_car.id_cost_car\n" +
-                    "GROUP BY uni.id";
-            stmt = conn.createStatement();
-            rs = stmt.executeQuery(sql);
-            while (rs.next()){
-                Present present = new Present();
-                Car car = getCarById(rs.getInt(1));
-                present.setCar(car);
-                present.setCountCar(rs.getInt(2));
-                present.setCostCar(rs.getInt(3));
-                presents.add(present);
-            }
-        } catch (Exception e) {
-            e.printStackTrace();
-        } finally {
-            if (stmt != null){ stmt.close(); }
-            if (rs != null) { rs.close(); }
-        }
-        return presents;
-    }
-
     public ArrayList<Present> presentBySQL(String sql) throws SQLException {
         Statement stmt = null;
         ResultSet rs = null;
@@ -628,30 +503,6 @@ public class MySQLManager {
             if (rs != null) { rs.close(); }
         }
         return presents;
-    }
-
-    public ArrayList<Car> getCars() throws SQLException {
-        Statement stmt = null;
-        ResultSet rs = null;
-        ArrayList<Car> cars = new ArrayList<Car>();
-        try {
-            conn.setAutoCommit(false);
-            stmt = conn.createStatement();
-            String sql = "SELECT car.id_car AS id_c\n" +
-                    "FROM car\n";
-            stmt = conn.createStatement();
-            rs = stmt.executeQuery(sql);
-            while (rs.next()){
-                Car car = getCarById(rs.getInt(1));
-                cars.add(car);
-            }
-        } catch (Exception e){
-            e.printStackTrace();
-        } finally {
-            if (stmt != null){ stmt.close(); }
-            if (rs != null) { rs.close(); }
-        }
-        return cars;
     }
 
     public ArrayList<String> getAutoMark() throws SQLException {
@@ -794,32 +645,6 @@ public class MySQLManager {
         return typeDrive;
     }
 
-    public ArrayList<Present> getCountCarByIdCar() throws SQLException {
-        Statement stmt = null;
-        ResultSet rs = null;
-        ArrayList<Present> cars = new ArrayList<>();
-        try {
-            conn.setAutoCommit(false);
-            String sql = "SELECT `cost_car`.id_car, `cost_car`.cost\n" +
-                    "FROM uni INNER JOIN cost_car ON uni.id = cost_car.id_cost_car\n" +
-                    "GROUP BY uni.id";
-            stmt = conn.createStatement();
-            rs = stmt.executeQuery(sql);
-            while (rs.next()){
-                Present pr = new Present();
-                pr.setCar(getCarById(rs.getInt(1)));
-                pr.setCostCar(rs.getInt(2));
-                cars.add(pr);
-            }
-        } catch (Exception e) {
-            e.printStackTrace();
-        } finally {
-            if (stmt != null){ stmt.close(); }
-            if (rs != null) { rs.close(); }
-        }
-        return cars;
-    }
-
     public ArrayList<Present> getPresentBySql(String sql) throws SQLException {
         Statement stmt = null;
         ResultSet rs = null;
@@ -936,56 +761,6 @@ public class MySQLManager {
             if (rs != null) { rs.close(); }
         }
         return cars;
-    }
-
-    public ArrayList<Car> getCarsFromSQLStatement() throws SQLException {
-        Statement stmt = null;
-        ResultSet rs = null;
-        ArrayList<Car> allCar = new ArrayList<>();
-        try {
-            conn.setAutoCommit(false);
-
-            String sql = "SELECT `auto_mark`.`name_mark`, model, `color`,  region, `engine_volume`, `year`,\n" +
-                    "`type_body`.`type_body`, `transmission_type`.`transmission_type`, `petrol_type`.`petrol_type`,\n" +
-                    "`type_drive`.`type_drive`, `seats_number`, `door_number`\n" +
-                    "FROM car\n" +
-                    "INNER JOIN type_body ON car.`id_type_body` = type_body.id_type_body\n" +
-                    "INNER JOIN `auto_mark` ON car.`id_mark` = `auto_mark`.`id_mark`\n" +
-                    "INNER JOIN `transmission_type` ON car.`id_transmission` = `transmission_type`.`id_transmission`\n" +
-                    "INNER JOIN `petrol_type` ON `car`.`id_petrol` = `petrol_type`.`id_petrol`\n" +
-                    "INNER JOIN `type_drive` ON `car`.`id_type_drive` = `type_drive`.`id_type_drive`\n" ;
-            stmt = conn.createStatement();
-            rs = stmt.executeQuery(sql);
-            while (rs.next()){
-                Car car = new Car();
-                car.setNameMark(rs.getString("name_mark"));
-                car.setModel(rs.getString("model"));
-//                Date date = new Date();
-//                try{
-//                    date = new SimpleDateFormat("yyyy-MM-dd").parse(rs.getString("year"));
-//                }catch(Exception e){
-//                    System.out.println(e);
-//                }
-                car.setYear(rs.getInt("year"));
-                car.setBodyType(rs.getString("type_body"));
-                car.setColor(rs.getString("color"));
-                car.setDoorNumber(Integer.parseInt(rs.getString("door_number")));
-                car.setDriveType(rs.getString("type_drive"));
-                car.setEngineVolume(Double.parseDouble(rs.getString("engine_volume")));
-                car.setPetrolType(rs.getString("petrol_type"));
-                car.setRegion(rs.getString("region"));
-                car.setSeatsNumber(Integer.parseInt(rs.getString("seats_number")));
-                car.setTransmissionType(rs.getString("transmission_type"));
-                allCar.add(car);
-            }
-
-        } catch (Exception e) {
-            e.printStackTrace();
-        } finally {
-            if (stmt != null){ stmt.close(); }
-            if (rs != null) { rs.close(); }
-        }
-        return allCar;
     }
 
     public void openConnection() throws ClassNotFoundException, SQLException {

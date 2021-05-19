@@ -44,8 +44,8 @@ public class ApplicationFrame extends JFrame {
         currentPage = new CatalogPage(this);
         contentPane.add(currentPage, BorderLayout.CENTER);
         setContentPane(contentPane);
-        setVisible(true);
-        //new AuthorizationFrame(this);
+//        setVisible(true);
+        new AuthorizationFrame(this);
     }
     public void setPage(Page newPage) {
     	contentPane.remove(currentPage);
